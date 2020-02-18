@@ -11,6 +11,7 @@ from numpy import arange,array,ones
 from scipy import stats
 import psycopg2
 from sqlalchemy import create_engine
+from datetime import datetime, date, timedelta
 
 
 
@@ -66,7 +67,7 @@ def display_year_selector(product_value):
         return html.P('Enter Year (YYYY)') ,dcc.Input(
                     id = 'year',
                     type = 'number',
-                    value = str(current_year),
+                    value = current_year,
                     min = 1950, max = current_year
                 )
 
@@ -348,7 +349,7 @@ def display_period_selector(product_value):
                         {'label':'Summer (Jun-Aug)', 'value':'summer'},
                         {'label':'Fall (Sep-Nov)', 'value':'fall'},
                     ],
-                    # value = 'annual',
+                    value = 'annual',
                     labelStyle = {'display':'inline'}
                 ),
         ],
@@ -413,8 +414,11 @@ def display_day_bar(selected_product):
              Input('year', 'value'),
              Input('period', 'value')])
 def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
+    print(period)
+    print(selected_year)
     previous_year = int(selected_year) - 1
-    selected_year = selected_year
+    the_selected_year = selected_year
+    print(type(the_selected_year))
     temps = pd.read_json(temp_data)
     temps = temps.drop([0,1], axis=1)
     temps.columns = ['date','TMAX','TMIN']
@@ -433,7 +437,7 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
     df_rh_cy = df_record_highs_ly[:len(temps_cy.index)]
 
     df_norms = pd.read_json(norms)
-    if selected_year % 4 == 0:
+    if int(the_selected_year) % 4 == 0:
         df_norms = df_norms
     else:
         df_norms = df_norms.drop(df_norms.index[59])
@@ -520,7 +524,7 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
         rh_value = df_record_highs[0]
         rl_value = df_record_lows[0]
 
-    else:
+    elif period == 'annual':
         temps = temps_cy
         nh_value = temps['nh']
         nl_value = temps['nl']
