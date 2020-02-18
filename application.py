@@ -5,7 +5,8 @@ import dash_table as dt
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from homepage import Homepage
-from den_temps import temp_App
+from den_temps import temp_App, today
+
 
 app = dash.Dash()
 
@@ -26,6 +27,18 @@ def display_page(pathname):
         return ice_App()
     else:
         return Homepage()
+
+@app.callback(
+    Output('date-picker', 'children'),
+    [Input('product', 'value')])
+    # Input('year', 'value')])
+def display_date_selector(product_value):
+    if product_value == 'climate-for-day':
+        return  html.P('Select Date (MM-DD)'), dcc.DatePickerSingle(
+                    id='date',
+                    display_format='MM-DD',
+                    date=today
+                )
 
 
 if __name__ == '__main__':
