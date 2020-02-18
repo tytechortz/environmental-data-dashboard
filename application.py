@@ -224,6 +224,45 @@ def display_climate_day_table(all_data, selected_date):
 
     return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min  
 
+@app.callback(
+    Output('climate-day-table', 'children'),
+    [Input('product', 'value')])
+def display_climate_table(value):
+    if value == 'climate-for-day':
+        return dt.DataTable(id='datatable-interactivity',
+        data=[{}], 
+        columns=[{}], 
+        fixed_rows={'headers': True, 'data': 0},
+        style_cell_conditional=[
+            {'if': {'column_id': 'Date'},
+            'width':'100px'},
+            {'if': {'column_id': 'TMAX'},
+            'width':'100px'},
+            {'if': {'column_id': 'TMIN'},
+            'width':'100px'},
+        ],
+        style_data_conditional=[
+            {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(248, 248, 248)'
+            },
+        ],
+        style_header={
+        'backgroundColor': 'rgb(230, 230, 230)',
+        'fontWeight': 'bold'
+        },
+        # editable=True,
+        # filter_action="native",
+        sort_action="native",
+        sort_mode="multi",
+        column_selectable="single",
+        selected_columns=[],
+        selected_rows=[],
+        # page_action="native",
+        page_current= 0,
+        page_size= 10,
+        )
+
 
 if __name__ == '__main__':
     app.run_server(debug=False)
