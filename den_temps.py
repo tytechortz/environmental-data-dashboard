@@ -4,6 +4,8 @@ import dash_core_components as dcc
 from connect import norm_records, rec_lows, rec_highs, all_temps
 from datetime import datetime, date, timedelta
 import time
+from connect import all_temps
+import pandas as pd
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
@@ -12,6 +14,8 @@ current_year = datetime.now().year
 today = time.strftime("%Y-%m-%d")
 startyr = 1950
 year_count = current_year-startyr
+
+df_all_temps = pd.DataFrame(all_temps,columns=['dow','sta','Date','TMAX','TMIN'])
 
 def temp_App():
     return html.Div(
