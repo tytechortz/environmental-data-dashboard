@@ -17,6 +17,15 @@ def temp_App():
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div(
+                    'NOAA Stapleton Station Data',
+                    className='twelve columns',
+                    style={'text-align': 'center'}
+                ),
+            ],
+                className='row'
+            ),
     ]
   )
 
