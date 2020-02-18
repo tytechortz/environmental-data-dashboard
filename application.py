@@ -7,6 +7,8 @@ from dash.dependencies import Input, Output, State
 from homepage import Homepage
 from den_temps import temp_App, today, df_all_temps
 import pandas as pd
+from numpy import arange,array,ones
+from scipy import stats
 
 
 
@@ -63,56 +65,6 @@ def title_date(temps):
     last_day = title_temps.iloc[-1, 0] 
     
     return '1950-01-01 through {}'.format(last_day)
-
-
-# @app.callback(
-#     Output('daily-min-t', 'children'),
-#     [Input('product', 'value'),
-#     Input('d-min-min', 'children'),
-#     Input('avg-of-dly-lows', 'children'),
-#     Input('d-max-min', 'children')])
-# def min_stats(product, d_min_min, adminl, d_max_min):
-#     dly_min_min = d_min_min
-#     adminl = adminl
-#     dly_max_min = d_max_min
-#     print(dly_min_min)
-#     print(adminl)
-#     print(dly_max_min)
-#     if product == 'climate-for-day':
-#         return html.Div([
-#             html.Div([
-#                 html.Div('Minimum Temperatures', style={'text-align':'center', 'color':'blue'})
-#             ]),
-#             html.Div([
-#                 html.Div([
-#                     html.Div([
-#                         html.Div('Minimum', style={'text-align':'center', 'color': 'blue'}),
-#                         html.Div('{}'.format(dly_min_min), style={'text-align':'center'})
-#                     ],
-#                         className='round1 four columns'
-#                     ),
-#                     html.Div([
-#                         html.Div('Average', style={'text-align':'center', 'color': 'blue'}),
-#                         html.Div('{:.0f}'.format(adminl), style={'text-align':'center'})
-#                     ],
-#                         className='round1 four columns'
-#                     ),
-#                     html.Div([
-#                         html.Div('Maximum', style={'text-align':'center', 'color': 'blue'}),
-#                         html.Div('{}'.format(dly_max_min), style={'text-align':'center'})
-#                     ],
-#                         className='round1 four columns'
-#                     ),
-#                 ],
-#                     className='row'
-#                 ),
-#             ],
-#                 className='pretty_container'
-#             ),
-                
-#         ],
-#             # className='twelve columns'
-#         ),
 
 @app.callback(
     Output('daily-stats', 'children'),
@@ -263,6 +215,180 @@ def display_climate_table(value):
         page_size= 10,
         )
 
+@app.callback(
+    Output('climate-day-bar', 'figure'),
+    [Input('date', 'date'),
+    Input('all-data', 'children'),
+    Input('temp-param', 'value'),
+    Input('product', 'value')])
+def climate_day_graph(selected_date, all_data, selected_param, selected_product):
+    dr = pd.read_json(all_data)
+    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    dr.set_index(['Date'], inplace=True)
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr['AMAX'] = dr['TMAX'].mean()
+    dr['AMIN'] = dr['TMIN'].mean()
+   
+    xi = arange(0,len(dr['TMAX']))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMAX'])
+    max_trend = (slope*xi+intercept)
+  
+    dr['MXTRND'] = max_trend
+    xi = arange(0,len(dr['TMIN']))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMIN'])
+    min_trend = (slope*xi+intercept)
+    dr['MNTRND'] = min_trend
+
+    all_max_temp_fit = pd.DataFrame(max_trend)
+    all_max_temp_fit.index = dr.index
+   
+
+    all_min_temp_fit = pd.DataFrame(min_trend)
+    all_min_temp_fit.index = dr.index
+    
+    title_param = dr.index[0].strftime('%B %d')
+    if selected_param == 'TMAX':
+        y = dr[selected_param]
+        base = 0
+        color_a = 'tomato'
+        color_b = 'red'
+        avg_y = dr['AMAX']
+        trend_y = dr['MXTRND']
+        name = 'temp'
+        name_a = 'avg high'
+        name_b = 'trend'
+        # hovertemplate='TMAX: %{y}'
+        
+
+    elif selected_param == 'TMIN':
+        y = dr[selected_param]
+        base = 0
+        color_a = 'blue'
+        color_b = 'dodgerblue'
+        avg_y = dr['AMIN']
+        trend_y = dr['MNTRND']
+        name = 'temp'
+        name_a = 'avg low'
+        name_b = 'trend'
+        # hovertemplate='TMIN: %{y}'
+
+    else:
+        y = dr['TMAX'] - dr['TMIN']
+        base = dr['TMIN']
+        color_a = 'dodgerblue'
+        color_b = 'tomato'
+        avg_y = dr['AMIN']
+        trend_y = dr['AMAX']
+        name = 'range'
+        name_a = 'avg low'
+        name_b = 'avg high'
+        # hovertemplate='Temp Range: %{y} - %{base}<extra></extra><br>'
+
+    data = [
+        go.Bar(
+            y=y,
+            x=dr.index,
+            base=base,
+            marker={'color':'black'},
+            name=name,
+            # hovertemplate=hovertemplate
+        ),
+        go.Scatter(
+            y=avg_y,
+            x=dr.index,
+            mode = 'lines',
+            name=name_a,
+            line={'color': color_a},
+            # hovertemplate=hovertemplate
+        ),
+        go.Scatter(
+            y=trend_y,
+            x=dr.index,
+            name=name_b,
+            mode = 'lines',
+            line={'color': color_b},
+            # hovertemplate=hovertemplate
+        ),  
+    ]
+    layout = go.Layout(
+        xaxis={'title': 'Year'},
+        yaxis={'title': 'Deg F'},
+        title='{} for {}'.format(selected_param,title_param),
+        plot_bgcolor = 'lightgray',
+        height=340
+    )
+    return {'data': data, 'layout': layout} 
+
+@app.callback(
+    Output('period-picker', 'children'),
+    [Input('product', 'value')])
+def display_period_selector(product_value):
+    if product_value == 'temp-graph':
+        return html.Div([
+            dcc.RadioItems(
+                    id = 'period',
+                    options = [
+                        {'label':'Annual (Jan-Dec)', 'value':'annual'},
+                        {'label':'Winter (Dec-Feb)', 'value':'winter'},
+                        {'label':'Spring (Mar-May)', 'value':'spring'},
+                        {'label':'Summer (Jun-Aug)', 'value':'summer'},
+                        {'label':'Fall (Sep-Nov)', 'value':'fall'},
+                    ],
+                    # value = 'annual',
+                    labelStyle = {'display':'inline'}
+                ),
+        ],
+            className='pretty_container'
+        ), 
+    elif product_value == 'climate-for-day':
+        return html.Div([
+            dcc.RadioItems(
+                    id = 'temp-param',
+                    options = [
+                        {'label':'Max Temp', 'value':'TMAX'},
+                        {'label':'Min Temp', 'value':'TMIN'},
+                        {'label':'Temp Range', 'value':'RANGE'},
+                    ],
+                    value = 'TMAX',
+                    labelStyle = {'display':'inline-block'}
+                )
+    ],
+        className='pretty_container'
+    ),
+    elif product_value == 'fyma-graph':
+        return html.Div([
+            dcc.RadioItems(
+                    id = 'fyma-param',
+                    options = [
+                        {'label':'Max Temp', 'value':'TMAX'},
+                        {'label':'Min Temp', 'value':'TMIN'},
+                    ],
+                    # value = 'TMAX',
+                    labelStyle = {'display':'inline-block'}
+                )
+    ],
+        className='pretty_container'
+    ),
+
+@app.callback(
+    Output('graph', 'children'),
+    [Input('product', 'value')])
+def display_graph(value):
+    if value == 'temp-graph':
+        return dcc.Graph(id='graph1')
+    elif value == 'fyma-graph':
+        return dcc.Graph(id='fyma-graph')
+    elif value == 'frbg':
+        return dcc.Graph(id='frs-bar')
+    elif value == 'frhm':
+        return dcc.Graph(id='frs-heat')
+
+@app.callback(
+    Output('bar', 'children'),
+    [Input('product', 'value' )])
+def display_day_bar(selected_product):
+    if selected_product == 'climate-for-day':
+        return dcc.Graph(id='climate-day-bar')
 
 if __name__ == '__main__':
     app.run_server(debug=False)
