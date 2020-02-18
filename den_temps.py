@@ -17,6 +17,15 @@ year_count = current_year-startyr
 
 df_all_temps = pd.DataFrame(all_temps,columns=['dow','sta','Date','TMAX','TMIN'])
 
+last_day = df_all_temps.iloc[-1, 2] + timedelta(days=1)
+ld = last_day.strftime("%Y-%m-%d")
+
+df_norms = pd.DataFrame(norm_records)
+
+df_rec_lows = pd.DataFrame(rec_lows)
+
+df_rec_highs = pd.DataFrame(rec_highs)
+
 def temp_App():
     return html.Div(
         [
