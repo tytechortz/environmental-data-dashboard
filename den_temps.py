@@ -153,16 +153,13 @@ def temp_App():
                 className='row'
             ),
             html.Div([
+              html.Div([
                 html.Div([
-                        html.Div(id='daily-max-t'),
-                    ],
-                        className='six columns'
-                    ),
-                    html.Div([
-                        html.Div(id='daily-min-t'),
-                    ],
-                        className='six columns'
-                    ), 
+                  html.Div(id='daily-stats'),
+                ]),
+              ],
+                className='twelve columns'
+              ),
             ],
                 className='row'
             ),
