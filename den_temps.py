@@ -29,6 +29,12 @@ df_rec_highs = pd.DataFrame(rec_highs)
 def temp_App():
     return html.Div(
         [
+            html.Header([
+                html.Div([
+                    dcc.Link('Home', href='/'),
+                    dcc.Link('Arctic Sea Ice', href='/ice'),
+                ])
+            ]),
             html.Div([
                 html.H4(
                     'DENVER TEMPERATURE RECORD',

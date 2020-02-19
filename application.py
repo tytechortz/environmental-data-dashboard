@@ -717,6 +717,50 @@ def rec_low_temps(selected_year):
         rec_lows = df_rec_lows.drop(df_rec_lows.index[59])
     return rec_lows.to_json()
 
+@app.callback(Output('frs-bar-controls', 'children'),
+             [Input('product', 'value')])
+def update_frs_graph(selected_product,):
+    if selected_product == 'frbg':
+        return html.Div([
+            dcc.Markdown('''
+            Select Max/Min and temperature to filter bar chart to show number of days 
+            per year above or below selected temperature.
+            '''),
+            html.Div([
+                html.Div(['Select Min/Max Temperature'], className='pretty_container'),
+                dcc.RadioItems(
+                    id='min-max-bar',
+                    options=[
+                        {'label':'Max', 'value':'TMAX'},
+                        {'label':'Min', 'value':'TMIN'},
+                    ],
+                    labelStyle={'display':'inline'},
+                    value='TMAX'   
+                ),
+                html.Div(['Select Greater/Less Than'], className='pretty_container'),
+                dcc.RadioItems(
+                    id='greater-less-bar',
+                    options=[
+                        {'label':'>=', 'value':'>='},
+                        {'label':'<', 'value':'<'},
+                    ],
+                    labelStyle={'display':'inline'},
+                    value='>='   
+                ),
+                html.Div(['Select Temperature'], className='pretty_container'),
+                dcc.Input(
+                    id='input-range',
+                    type='number',
+                    min=-30,
+                    max=100,
+                    step=5,
+                    # value=90
+                ),
+            ])
+        ],
+            className='round1'
+        ),
+
   
 
 if __name__ == '__main__':
