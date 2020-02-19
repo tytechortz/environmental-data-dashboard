@@ -44,6 +44,26 @@ body = dbc.Container([
    ],
       className='row'
    ),
+   html.Div([
+      html.Div([
+         html.H2(
+         'Denver Temperature Data',
+         ),
+         html.P(
+            """ Denver Weather Record 1950-Present. Data from former official NOAA Denver Stapleton weather station from 1950-present. Data is downloaded from NOAA API to postgresql database automatically, processed and displayed with python pandas and dash libraries.  """
+         ),
+         dbc.Button("Open App", color="primary", href="/den-temps"),
+      ],
+         className='six columns'
+      ),
+      html.Div([
+         html.Img(src='assets/den-weather.jpg', height=350)
+      ],
+         className='five columns'
+      ),
+   ],
+      className='row'
+   ),
 
 ])
 
