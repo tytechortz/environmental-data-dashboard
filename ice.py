@@ -116,10 +116,15 @@ def ice_App():
               html.Div([
                 dcc.Link('Home', href='/'),
               ],
-                className='one column'
+                className='two columns'
               ),
               html.Div([
-                dcc.Link('Denver Temperature', href='/den-temps'),
+                dcc.Link('Denver Temps', href='/den-temps'),
+              ],
+                className='two columns'
+              ),
+              html.Div([
+                dcc.Link('Colorado River', href='/colorado-river'),
               ],
                 className='two columns'
               ),
@@ -127,8 +132,8 @@ def ice_App():
               className='twelve columns'
             ),
           ],
-              className='row'
-          ),  
+            className='row'
+          ),
           html.Div([
               html.H2(
                   'Arctic Sea Ice Extent',

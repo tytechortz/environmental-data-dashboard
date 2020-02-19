@@ -29,12 +29,29 @@ df_rec_highs = pd.DataFrame(rec_highs)
 def temp_App():
     return html.Div(
         [
-            html.Header([
-                html.Div([
-                    dcc.Link('Home', href='/'),
-                    dcc.Link('Arctic Sea Ice', href='/ice'),
-                ])
-            ]),
+            html.Div([
+            html.Div([
+              html.Div([
+                dcc.Link('Home', href='/'),
+              ],
+                className='one column'
+              ),
+              html.Div([
+                dcc.Link('Arctic Ice', href='/ice'),
+              ],
+                className='two columns'
+              ),
+              html.Div([
+                dcc.Link('Colorado River', href='/colorado-river'),
+              ],
+                className='two columns'
+              ),
+            ],
+              className='twelve columns'
+            ),
+          ],
+            className='row'
+          ),
             html.Div([
                 html.H2(
                     'Denver Temperature Record',
