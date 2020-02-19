@@ -114,7 +114,7 @@ def ice_App():
             html.Header([
                 html.Div([
                     dcc.Link('Home', href='/'),
-                    dcc.Link('Arctic Sea Ice', href='/ice'),
+                    dcc.Link('Denver Temperature', href='/den-temps'),
                 ])
             ]),
             html.Div([
