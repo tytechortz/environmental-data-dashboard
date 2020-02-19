@@ -894,6 +894,149 @@ def display_fyma_stats(selected_param, all_data):
                 ],
                     className='round1'
                 ),
+
+@app.callback(
+    Output('fyma-graph', 'figure'),
+    [Input('fyma-param', 'value'),
+    Input('df5', 'children'),
+    Input('max-trend', 'children'),
+    Input('min-trend', 'children'),
+    Input('all-data', 'children')])
+def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
+    fyma_temps = pd.read_json(all_data)
+    fyma_temps['Date'] = pd.to_datetime(fyma_temps['Date'], unit='ms')
+    # fyma_temps['Date']=fyma_temps['Date'].dt.strftime("%Y-%m-%d") 
+    fyma_temps.set_index(['Date'], inplace=True)
+
+    df_5 = pd.read_json(df_5)
+
+    all_max_temp_fit = pd.DataFrame(max_trend)
+    all_max_temp_fit.index = df_5.index
+    all_max_temp_fit.index = all_max_temp_fit.index.strftime("%Y-%m-%d")
+
+    all_min_temp_fit = pd.DataFrame(min_trend)
+    all_min_temp_fit.index = df_5.index
+    all_min_temp_fit.index = all_min_temp_fit.index.strftime("%Y-%m-%d")
+
+    all_max_rolling = fyma_temps['TMAX'].dropna().rolling(window=1825)
+    all_max_rolling_mean = all_max_rolling.mean()
+    
+    all_min_rolling = fyma_temps['TMIN'].dropna().rolling(window=1825)
+    all_min_rolling_mean = all_min_rolling.mean()
+
+    if selected_param == 'TMAX':
+        trace = [
+            go.Scatter(
+                y = all_max_rolling_mean,
+                x = all_max_rolling_mean.index,
+                name='Max Temp'
+            ),
+            go.Scatter(
+                y = all_max_temp_fit[0],
+                x = all_max_temp_fit.index,
+                name = 'trend',
+                line = {'color':'red'}
+            ),
+        ]
+    elif selected_param == 'TMIN':
+        trace = [
+            go.Scatter(
+                y = all_min_rolling_mean,
+                x = all_min_rolling_mean.index,
+                name='Min Temp'
+            ),
+            go.Scatter(
+                y = all_min_temp_fit[0],
+                x = all_min_temp_fit.index,
+                name = 'trend',
+                line = {'color':'red'}
+            ),
+        ]
+    layout = go.Layout(
+        xaxis = {'rangeslider': {'visible':True},},
+        yaxis = {"title": 'Temperature F'},
+        title ='5 Year Rolling Mean {}'.format(selected_param),
+        plot_bgcolor = 'lightgray',
+        height = 500,
+    )
+    return {'data': trace, 'layout': layout}
+
+@app.callback(
+    Output('df5', 'children'),
+    [Input('all-data', 'children'),
+    Input('product', 'value')])
+def clean_df5(all_data, product_value):
+    dr = pd.read_json(all_data)
+    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+   
+    df_date_index = df_all_temps.set_index(['Date'])
+
+    df_date_index.index = pd.to_datetime(df_date_index.index)
+    df_ya_max = df_date_index.resample('Y').mean()
+    df5 = df_ya_max[:-1]
+    df5 = df5.drop(['dow'], axis=1)
+
+    return df5.to_json(date_format='iso')
+
+@app.callback(
+    Output('max-trend', 'children'),
+    [Input('df5', 'children'),
+    Input('product', 'value')])
+def all_max_trend(df_5, product_value):
+    
+    df5 = pd.read_json(df_5)
+    xi = arange(0,year_count)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,df5['TMAX'])
+
+    return (slope*xi+intercept)
+
+@app.callback(
+    Output('min-trend', 'children'),
+    [Input('df5', 'children'),
+    Input('product', 'value')])
+def all_min_trend(df_5, product_value):
+    
+    df5 = pd.read_json(df_5)
+    xi = arange(0,year_count)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,df5['TMIN'])
+    
+    return (slope*xi+intercept)
+
+@app.callback(Output('frs-heat-controls', 'children'),
+             [Input('product', 'value')])
+def update_frs_heat_graph(selected_product):
+
+    months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    if selected_product == 'frhm':
+        return html.Div([
+            dcc.Markdown('''
+            Select Month to compare months across the record period.
+            '''),
+            html.Div([
+                dcc.RadioItems(
+                    id='heat-param',
+                    options=[
+                        {'label':'TMAX', 'value':'TMAX'},
+                        {'label':'TMIN', 'value':'TMIN'},
+                        {'label':'TAVG', 'value':'TAVG'},
+                    ],
+                    labelStyle={'display':'inline'},
+                    # value='TMAX'   
+                ),
+            ],
+                className='pretty_container'
+            ),
+            html.Div([
+                dcc.Markdown('''
+            Months arranged in columns JAN at bottom.  Colors represent magnitude of 
+            the departure of the mean monthly temperature from the mean monthly normal 
+            temperature.
+            '''),
+            ])
+            
+        ],
+            className='round1'
+        ),
   
 
 if __name__ == '__main__':
