@@ -74,17 +74,6 @@ def display_year_selector(product_value):
                     min = 1950, max = current_year
                 )
 
-# @app.callback(Output('title-date-range', 'children'),
-#             [Input('all-data', 'children')])
-# def title_date(temps):
-#     print(temps)
-#     title_temps = pd.read_json(temps)
-#     title_temps['Date'] = pd.to_datetime(title_temps['Date'], unit='ms')
-#     title_temps['Date']=title_temps['Date'].dt.strftime("%Y-%m-%d")
-#     last_day = title_temps.iloc[-1, 0] 
-    
-#     return '1950-01-01 through {}'.format(last_day)
-
 @app.callback(
     Output('daily-stats', 'children'),
     [Input('product', 'value'),
@@ -773,12 +762,14 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
     all_data = pd.read_json(all_data)
     all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
     all_data.set_index(['Date'], inplace=True)
+    print(all_data)
     if g_l == '>=':
         df = all_data.loc[all_data[min_max]>=input_value]
     else:
         df = all_data.loc[all_data[min_max]<input_value]
     df_count = df.resample('Y').count()[min_max]
     df = pd.DataFrame({'DATE':df_count.index, 'Selected Days':df_count.values})
+    print(df)
     
     data = [
         go.Bar(
@@ -794,6 +785,7 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
                 plot_bgcolor = 'lightgray',
                 height = 500,
         )
+    return {'data': data, 'layout': layout}
 
 @app.callback(
     Output('fyma-stats', 'children'),
