@@ -30,7 +30,7 @@ body = dbc.Container([
          'Denver Temperature Data',
          ),
          html.P(
-            """ Denver Weather Record 1950-Present"""
+            """ Denver Weather Record 1950-Present. Data from former official NOAA Denver Stapleton weather station from 1950-present. Data is downloaded from NOAA API to postgresql database automatically, processed and displayed with python pandas and dash libraries.  """
          ),
          dbc.Button("Open App", color="primary", href="/den-temps"),
       ],
@@ -44,7 +44,7 @@ body = dbc.Container([
    ],
       className='row'
    ),
-   
+
 ])
 
 def Homepage():
