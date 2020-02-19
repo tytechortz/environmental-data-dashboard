@@ -54,11 +54,10 @@ def temp_App():
                 className='row'
             ),
             html.Div([
-                html.H6(
-                    id='title-date-range',
-                    className='twelve columns',
-                    style={'text-align': 'center'}
-                ),
+                html.Div(
+                  '1950-01-01 through {}'.format(last_day),
+                  className='twelve columns',
+                  style={'text-align': 'center'})
             ],
                 className='row'
             ),

@@ -37,6 +37,8 @@ def display_page(pathname):
         return Homepage()
 
 
+# Temperature callbacks
+
 @app.callback(Output('all-data', 'children'),
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
@@ -72,15 +74,16 @@ def display_year_selector(product_value):
                     min = 1950, max = current_year
                 )
 
-@app.callback(Output('title-date-range', 'children'),
-            [Input('all-data', 'children')])
-def title_date(temps):
-    title_temps = pd.read_json(temps)
-    title_temps['Date'] = pd.to_datetime(title_temps['Date'], unit='ms')
-    title_temps['Date']=title_temps['Date'].dt.strftime("%Y-%m-%d")
-    last_day = title_temps.iloc[-1, 0] 
+# @app.callback(Output('title-date-range', 'children'),
+#             [Input('all-data', 'children')])
+# def title_date(temps):
+#     print(temps)
+#     title_temps = pd.read_json(temps)
+#     title_temps['Date'] = pd.to_datetime(title_temps['Date'], unit='ms')
+#     title_temps['Date']=title_temps['Date'].dt.strftime("%Y-%m-%d")
+#     last_day = title_temps.iloc[-1, 0] 
     
-    return '1950-01-01 through {}'.format(last_day)
+#     return '1950-01-01 through {}'.format(last_day)
 
 @app.callback(
     Output('daily-stats', 'children'),
@@ -588,7 +591,6 @@ def display_graph_stats(temps, selected_product):
     temps = pd.read_json(temps)
     temps.index = pd.to_datetime(temps.index, unit='ms')
     temps = temps[np.isfinite(temps['TMAX'])]
-    print(temps)
     day_count = temps.shape[0]
     rec_highs = len(temps[temps['TMAX'] == temps['rh']])
     rec_lows = len(temps[temps['TMIN'] == temps['rl']])
@@ -800,7 +802,7 @@ def fyma_stuff(product):
     if product == 'fyma-graph':
         return html.Div(id='fyma-max-or-min-stats')
 
-    return {'data': data, 'layout': layout}
+    # return {'data': data, 'layout': layout}
 
 @app.callback(
     Output('fyma-max-or-min-stats', 'children'),
@@ -1111,6 +1113,10 @@ def update_heat_map(all_data, selected_value, normals, selected_product):
             'ticktext': ['FEB', 'APR', 'JUN', 'AUG', 'OCT', 'DEC']},
         )
     }
+
+# Ice callbacks
+
+
   
 
 if __name__ == '__main__':
