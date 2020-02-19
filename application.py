@@ -761,6 +761,39 @@ def update_frs_graph(selected_product,):
             className='round1'
         ),
 
+@app.callback(Output('frs-bar', 'figure'),
+             [Input('all-data', 'children'),
+             Input('input-range', 'value'),
+             Input('greater-less-bar', 'value'),
+             Input('min-max-bar', 'value')])
+def update_frs_graph(all_data, input_value, g_l, min_max):
+    
+    all_data = pd.read_json(all_data)
+    all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
+    all_data.set_index(['Date'], inplace=True)
+    if g_l == '>=':
+        df = all_data.loc[all_data[min_max]>=input_value]
+    else:
+        df = all_data.loc[all_data[min_max]<input_value]
+    df_count = df.resample('Y').count()[min_max]
+    df = pd.DataFrame({'DATE':df_count.index, 'Selected Days':df_count.values})
+    
+    data = [
+        go.Bar(
+            y=df['Selected Days'],
+            x=df['DATE'],
+            marker={'color':'dodgerblue'}               
+        )
+    ]
+    layout = go.Layout(
+                xaxis={'title':'Year'},
+                yaxis = {'title': '{} Degree Days'.format(input_value)},
+                title ='Days Where {} is {} {} Degrees F'.format(min_max, g_l, input_value),
+                plot_bgcolor = 'lightgray',
+                height = 500,
+        )
+
+    return {'data': data, 'layout': layout}
   
 
 if __name__ == '__main__':
