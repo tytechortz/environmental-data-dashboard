@@ -36,8 +36,8 @@ def temp_App():
                 ])
             ]),
             html.Div([
-                html.H4(
-                    'DENVER TEMPERATURE RECORD',
+                html.H2(
+                    'Denver Temperature Record',
                     className='twelve columns',
                     style={'text-align': 'center'}
                 ),
@@ -45,7 +45,7 @@ def temp_App():
                 className='row'
             ),
             html.Div([
-                html.Div(
+                html.H6(
                     'NOAA Stapleton Station Data',
                     className='twelve columns',
                     style={'text-align': 'center'}
@@ -54,7 +54,7 @@ def temp_App():
                 className='row'
             ),
             html.Div([
-                html.Div(
+                html.H6(
                   '1950-01-01 through {}'.format(last_day),
                   className='twelve columns',
                   style={'text-align': 'center'})
@@ -63,7 +63,7 @@ def temp_App():
             ),
             html.Div([
                 html.Div([
-                    html.Label('Select Product'),
+                    html.Label('Select Product', style={'text-align': 'center'}),
                     dcc.RadioItems(
                         id='product',
                         options=[

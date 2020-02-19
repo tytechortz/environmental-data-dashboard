@@ -44,6 +44,7 @@ body = dbc.Container([
    ],
       className='row'
    ),
+   
 ])
 
 def Homepage():
