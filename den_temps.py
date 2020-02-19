@@ -64,7 +64,8 @@ def temp_App():
             html.Div([
                 html.Div([
                     html.Label('Select Product', style={'text-align': 'center'}),
-                    dcc.RadioItems(
+                    html.Div([
+                        dcc.RadioItems(
                         id='product',
                         options=[
                             {'label':'Temperature graphs', 'value':'temp-graph'},
@@ -75,7 +76,10 @@ def temp_App():
                         ],
                         # value='temp-graph',
                         labelStyle={'display': 'block'},
-                    ),
+                        ),
+                    ],
+                        className='pretty_container'
+                    ),   
                 ],
                     className='three columns',
                 ),

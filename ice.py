@@ -158,7 +158,7 @@ def ice_App():
                         ],
                         # value='temp-graph',
                         labelStyle={'display': 'block'},
-                    ),
+                      ),
                     ],
                         className='pretty_container'
                     ),
