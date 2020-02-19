@@ -1037,6 +1037,80 @@ def update_frs_heat_graph(selected_product):
         ],
             className='round1'
         ),
+
+@app.callback(Output('frs-heat', 'figure'),
+            [Input('all-data', 'children'),
+            Input('heat-param', 'value'),
+            Input('norms', 'children'),
+            Input('product', 'value')])
+def update_heat_map(all_data, selected_value, normals, selected_product):
+    traces = []
+    month_values = {'JAN':1, 'FEB':2, 'MAR':3, 'APR':4, 'MAY':5, 'JUN':6, 'JUL':7, 'AUG':8, 'SEP':9, 'OCT':10, 'NOV':11, 'DEC':12}
+    all_data = pd.read_json(all_data)
+    all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
+    all_data.set_index(['Date'], inplace=True)
+    all_data['TAVG'] = (all_data['TMAX'] + all_data['TMIN']) / 2
+
+    new_all_data = pd.DataFrame()
+    new_all_data['TMAX'] = all_data['TMAX'].resample('M').mean()
+    new_all_data['TMIN'] = all_data['TMIN'].resample('M').mean()
+    new_all_data['TAVG'] = all_data['TAVG'].resample('M').mean()
+    # new_all_data.index.dt.strftime('%b, %Y')
+    
+    df_normals = pd.read_json(normals)
+    df_normals[2] = pd.to_datetime(df_normals[2], unit='ms')
+    df_normals.set_index([2], inplace=True)
+
+    heat_norms = pd.DataFrame()
+    heat_norms['TMAX_AVG'] = df_normals[3].resample('M').mean()
+    heat_norms['TMIN_AVG'] = df_normals[4].resample('M').mean()
+    heat_norms['TAVG_AVG'] = df_normals[5].resample('M').mean()
+  
+    res = pd.merge(new_all_data.assign(grouper=new_all_data.index.month),
+                   heat_norms.assign(grouper=heat_norms.index.month),
+                   how='left', on='grouper')
+   
+    res['TMAX_DIFF'] = res['TMAX'] - res['TMAX_AVG']
+    res['TMIN_DIFF'] = res['TMIN'] - res['TMIN_AVG']
+    res['TAVG_DIFF'] = res['TAVG'] - res['TAVG_AVG']
+   
+    colorscale_max = ((((res['TMAX_DIFF'].max()-res['TMAX_DIFF'].min()) - res['TMAX_DIFF'].max()) / (res['TMAX_DIFF'].max() - res['TMAX_DIFF'].min())))
+    colorscale_min = ((((res['TMIN_DIFF'].max()-res['TMIN_DIFF'].min()) - res['TMIN_DIFF'].max()) / (res['TMIN_DIFF'].max() - res['TMIN_DIFF'].min())))
+    colorscale_avg = ((((res['TAVG_DIFF'].max()-res['TAVG_DIFF'].min()) - res['TAVG_DIFF'].max()) / (res['TAVG_DIFF'].max() - res['TAVG_DIFF'].min())))
+
+    months = ('JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC')
+
+    if selected_value == 'TMAX':
+        traces.append(go.Heatmap(
+                y=new_all_data.index.month,
+                x=new_all_data.index.year,
+                z=res['TMAX'] - res['TMAX_AVG'],
+                colorscale=[[0, 'blue'],[colorscale_max, 'white'], [1, 'red']],
+            ))
+    elif selected_value == 'TMIN':
+        traces.append(go.Heatmap(
+                y=new_all_data.index.month,
+                x=new_all_data.index.year,
+                z=res['TMIN'] - res['TMIN_AVG'],
+                colorscale=[[0, 'blue'],[colorscale_min, 'white'], [1, 'red']]
+            ))
+    elif selected_value == 'TAVG':
+        traces.append(go.Heatmap(
+                y=new_all_data.index.month,
+                x=new_all_data.index.year,
+                z=res['TAVG'] - res['TAVG_AVG'],
+                colorscale=[[0, 'blue'],[colorscale_avg, 'white'], [1, 'red']]
+            ))
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            title='Departure From Norm',
+            xaxis={'title':'YEAR'},
+            yaxis={'title':'MONTH','tickmode': 'array',
+            'tickvals': [2,4,6,8,10,12],
+            'ticktext': ['FEB', 'APR', 'JUN', 'AUG', 'OCT', 'DEC']},
+        )
+    }
   
 
 if __name__ == '__main__':
