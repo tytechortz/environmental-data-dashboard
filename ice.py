@@ -111,103 +111,115 @@ sort_arctic_r = arctic_r.sort_values(axis=0, ascending=True)
 def ice_App():
     return html.Div(
         [
-            html.Header([
-                html.Div([
-                    dcc.Link('Home', href='/'),
-                    dcc.Link('Denver Temperature', href='/den-temps'),
-                ])
-            ]),
+          html.Div([
             html.Div([
-                html.H2(
-                    'Arctic Sea Ice Extent',
-                    className='twelve columns',
-                    style={'text-align': 'center'}
-                ),
+              html.Div([
+                dcc.Link('Home', href='/'),
+              ],
+                className='one column'
+              ),
+              html.Div([
+                dcc.Link('Denver Temperature', href='/den-temps'),
+              ],
+                className='two columns'
+              ),
             ],
-                className='row'
+              className='twelve columns'
             ),
-            html.Div([
-                html.H6(
-                    '2006-Present',
-                    className='twelve columns',
-                    style={'text-align': 'center'}
-                ),
-            ],
-                className='row'
-            ),
-            html.Div([
-                html.H6(
-                    'Data From National Snow and Ice Data Center',
-                    className='twelve columns',
-                    style={'text-align': 'center'}
-                ),
-            ],
-                className='row'
-            ),
-            html.Div([
-                html.Div([
-                    html.Label('Select Product', style={'text-align': 'center'}),
-                    html.Div([
-                        dcc.RadioItems(
-                        id='product',
-                        options=[
-                            {'label':'Ice Exent By Year', 'value':'years-graph'},
-                            {'label':'Avg Monthy Extent', 'value':'monthly-bar'},
-                            {'label':'Extent On Current Date', 'value':'extent-date'},
-                            {'label':'Extent Rankings', 'value':'extent-stats'},
-                        ],
-                        # value='temp-graph',
-                        labelStyle={'display': 'block'},
+          ],
+              className='row'
+          ),  
+          html.Div([
+              html.H2(
+                  'Arctic Sea Ice Extent',
+                  className='twelve columns',
+                  style={'text-align': 'center'}
+              ),
+          ],
+              className='row'
+          ),
+          html.Div([
+              html.H6(
+                  '2006-Present',
+                  className='twelve columns',
+                  style={'text-align': 'center'}
+              ),
+          ],
+              className='row'
+          ),
+          html.Div([
+              html.H6(
+                  'Data From National Snow and Ice Data Center',
+                  className='twelve columns',
+                  style={'text-align': 'center'}
+              ),
+          ],
+              className='row'
+          ),
+          html.Div([
+              html.Div([
+                  html.Label('Select Product', style={'text-align': 'center'}),
+                  html.Div([
+                      dcc.RadioItems(
+                      id='product',
+                      options=[
+                          {'label':'Ice Exent By Year', 'value':'years-graph'},
+                          {'label':'Avg Monthy Extent', 'value':'monthly-bar'},
+                          {'label':'Extent On Current Date', 'value':'extent-date'},
+                          {'label':'Extent Rankings', 'value':'extent-stats'},
+                      ],
+                      # value='temp-graph',
+                      labelStyle={'display': 'block'},
                       ),
-                    ],
-                        className='pretty_container'
-                    ),
-                ],
-                    className='three columns',
-                ),
-                html.Div([
-                    html.Div(id='sea-selector'),
-                ],
-                    className='two columns'
-                ),
-                html.Div([
-                    html.Div(id='month-selector'),
-                ],
-                    className='two columns'
-                ),
-            ],
-                className='row'
-            ),
-            html.Div([
-                html.Div([
-                    html.Div(
-                        id='ice-graph'
-                    ), 
-                ],
-                    className='eight columns'
-                ),
-                html.Div([
-                    html.Div(id='stats-n-stuff')
-                ],
-                    className='four columns'
-                ), 
-            ],
-                className='row'
-            ),
-            html.Div([
-                html.Div([
-                    html.Div(
-                        id='stats'
-                    ), 
-                ],
-                    className='twelve columns'
-                ),
-            ],
-                className='row'
-            ),
-            
-            html.Div(id='df-monthly', style={'display': 'none'}),
-            html.Div(id='df-fdta', style={'display': 'none'}),
+                  ],
+                      className='pretty_container'
+                  ),
+              ],
+                  className='three columns',
+              ),
+              html.Div([
+                  html.Div(id='sea-selector'),
+              ],
+                  className='two columns'
+              ),
+              html.Div([
+                  html.Div(id='month-selector'),
+              ],
+                  className='two columns'
+              ),
+          ],
+              className='row'
+          ),
+          html.Div([
+              html.Div([
+                  html.Div(
+                      id='ice-graph'
+                  ), 
+              ],
+                  className='eight columns'
+              ),
+              html.Div([
+                  html.Div(id='stats-n-stuff')
+              ],
+                  className='four columns'
+              ), 
+          ],
+              className='row'
+          ),
+          html.Div([
+              html.Div([
+                  html.Div(
+                      id='stats'
+                  ), 
+              ],
+                  className='twelve columns'
+              ),
+          ],
+              className='row'
+          ),
+          
+          html.Div(id='df-monthly', style={'display': 'none'}),
+          html.Div(id='df-fdta', style={'display': 'none'}),
     ])
 
 app.layout = ice_App
