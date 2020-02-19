@@ -793,7 +793,107 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
                 height = 500,
         )
 
+@app.callback(
+    Output('fyma-stats', 'children'),
+    [Input('product', 'value')])
+def fyma_stuff(product):
+    if product == 'fyma-graph':
+        return html.Div(id='fyma-max-or-min-stats')
+
     return {'data': data, 'layout': layout}
+
+@app.callback(
+    Output('fyma-max-or-min-stats', 'children'),
+    [Input('fyma-param', 'value'),
+    Input('all-data', 'children')])
+def display_fyma_stats(selected_param, all_data):
+    # print(product)
+    fyma_temps = pd.read_json(all_data)
+    fyma_temps['Date'] = pd.to_datetime(fyma_temps['Date'], unit='ms')
+    fyma_temps.set_index(['Date'], inplace=True)
+
+    all_max_rolling = fyma_temps['TMAX'].dropna().rolling(window=1825)
+    all_max_rolling_mean = all_max_rolling.mean()
+    
+    all_min_rolling = fyma_temps['TMIN'].dropna().rolling(window=1825)
+    all_min_rolling_mean = all_min_rolling.mean()
+
+    max_max = all_max_rolling_mean.max().round(2)
+    max_max_index = all_max_rolling_mean.idxmax().strftime('%Y-%m-%d')
+    min_max = all_max_rolling_mean.min().round(2)
+    min_max_index = all_max_rolling_mean.idxmin().strftime('%Y-%m-%d')
+    current_max = all_max_rolling_mean[-1].round(2)
+    
+    min_min = all_min_rolling_mean.min().round(2)
+    min_min_index = all_min_rolling_mean.idxmin().strftime('%Y-%m-%d')
+    max_min = all_min_rolling_mean.max().round(2)
+    max_min_index = all_min_rolling_mean.idxmax().strftime('%Y-%m-%d')
+    current_min = all_min_rolling_mean[-1].round(2)
+  
+    # if product == 'fyma-graph':    
+        # print(type(max_index))
+
+    if selected_param == 'TMAX':
+
+        return html.Div(
+                [
+                    html.Div([
+                        html.Div('MAX STATS', style={'text-align':'center'}),
+                        # html.Div('{} on {}'.format(max_max, max_index ), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('CURRENT VALUE', style={'text-align':'center'}),
+                        html.Div('{}'.format(current_max), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('HIGH', style={'text-align':'center'}),
+                        html.Div('{} on {}'.format(max_max, max_max_index ), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('LOW', style={'text-align':'center'}),
+                        html.Div('{} on {}'.format(min_max, min_max_index ), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                ],
+                    className='round1'
+                ),
+    elif selected_param == 'TMIN':
+
+        return html.Div(
+                [
+                    html.Div([
+                        html.Div('MIN STATS', style={'text-align':'center'}),
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('CURRENT VALUE', style={'text-align':'center'}),
+                        html.Div('{}'.format(current_min), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('LOW', style={'text-align':'center'}),
+                        html.Div('{} on {}'.format(min_min, min_min_index ), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('HIGH', style={'text-align':'center'}),
+                        html.Div('{} on {}'.format(max_min, max_min_index ), style={'text-align': 'center'})
+                    ],
+                        className='round1'
+                    ),
+                ],
+                    className='round1'
+                ),
   
 
 if __name__ == '__main__':
