@@ -414,11 +414,8 @@ def display_day_bar(selected_product):
              Input('year', 'value'),
              Input('period', 'value')])
 def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
-    print(period)
-    print(selected_year)
     previous_year = int(selected_year) - 1
     the_selected_year = selected_year
-    print(type(the_selected_year))
     temps = pd.read_json(temp_data)
     temps = temps.drop([0,1], axis=1)
     temps.columns = ['date','TMAX','TMIN']
