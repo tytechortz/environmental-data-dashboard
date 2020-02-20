@@ -17,10 +17,7 @@ print(today)
 
 url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
 
-df = pd.read_csv('data.csv', skiprows=4)
-
-print(df)
-
+df_water = pd.read_csv('data.csv', skiprows=4)
 
 def river_App():
     return html.Div(
@@ -58,10 +55,26 @@ def river_App():
                 className='row'
             ),
             html.Div([
-                html.H6(
-                    'NOAA Stapleton Station Data',
-                    className='twelve columns',
-                    style={'text-align': 'center'}
+                html.Div([
+                    html.Div([
+                        html.Div('Select Reservoir', style={'text-align': 'center'}),
+                        dcc.Dropdown(
+                        id='lake',
+                        options=[
+                            {'label': 'Powell', 'value': 'lakepowell'},
+                            {'label': 'Mead', 'value': 'hdmlc'},
+                            {'label': 'Mead + Powell', 'value': 'combo'},
+                            {'label': 'Flaming Gorge', 'value': 'flaminggorge'},
+                            {'label': 'Navajo', 'value': 'navajo'},
+                            {'label': 'Blue Mesa', 'value': 'bluemesa'},
+                        ],
+                        value='lakepowell'
+                        ),
+                    ],
+                        className='pretty_container'
+                    ),
+                ],
+                    className='three columns'
                 ),
             ],
                 className='row'

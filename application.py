@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 from homepage import Homepage
 from den_temps import temp_App, df_all_temps, current_year, ld, df_norms, df_rec_lows, df_rec_highs, year_count, today, last_day
 from ice import ice_App, sea_options, df, year_options, value_range, month_options
-from colorado_river import river_App
+from colorado_river import river_App, df_water
 import pandas as pd
 import numpy as np
 from numpy import arange,array,ones
