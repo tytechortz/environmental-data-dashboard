@@ -2,13 +2,25 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import pandas as pd
+import time
+import json
+import requests
+# from lake_connect import flaminggorge, powell_latest, powell
+
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
-# df_water = pd.read_json('https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=2020-02-19&format=json')
 
-# print(df_water)
+today = time.strftime("%Y-%m-%d")
+print(today)
+
+url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
+
+df = pd.read_csv('data.csv', skiprows=4)
+
+print(df)
+
 
 def river_App():
     return html.Div(
