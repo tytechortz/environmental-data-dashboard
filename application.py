@@ -44,13 +44,22 @@ with requests.Session() as s:
     cr = csv.reader(decoded_content.splitlines(), delimiter=',')
     for i in range(4): next(cr)
     df_water = pd.DataFrame(cr)
-    my_list = list(cr)
-    for row in my_list:
-        print(row)
+    print(df_water)
+    new_header = df_water.iloc[0]
+    df_water = df_water[1:]
+    df_water.columns = new_header
+    print(df_water)
+    df_water['Date'] = pd.to_datetime(df_water['Date'])
+    print(df_water)
+    
+    
+# for col in dfw.columns:
+#   print(col)
+dfw.columns = dfw.iloc[1]
 
 
-
-print(df_water)
+# print(dfw)
+print(type(dfw.index[1]))
 
 
 @app.callback(
