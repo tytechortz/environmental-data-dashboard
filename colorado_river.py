@@ -79,6 +79,49 @@ def river_App():
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(
+                        id='lake-levels',
+                    ),
+                ],
+                    className='nine columns'
+                ),
+                html.Div([
+                    html.Div([
+                        html.Div(id='stats') 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        dcc.RadioItems(
+                            id='period',
+                            options=[
+                                {'label':'D', 'value':'1'},
+                                {'label':'W', 'value':'7'},
+                                {'label':'Y', 'value':'365'},
+                            ],
+                            value='1',
+                            labelStyle={'display': 'inline'},
+                            ), 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div(id='changes') 
+                    ],
+                        className='round1'
+                    ),
+                ],
+                    className='three columns'
+                ),
+            ],
+                className='row'
+            ),
+            html.Div(id='selected-water-data', style={'display': 'none'}),
+            html.Div(id='current-volume', style={'display': 'none'}),
+            html.Div(id='site', style={'display': 'none'}),
+            html.Div(id='cvd', style={'display': 'none'}),
         ]
     )
 

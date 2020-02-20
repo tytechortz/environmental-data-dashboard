@@ -27,6 +27,90 @@ app.layout = html.Div([
     html.Div(id = 'page-content')
 ])
 
+@app.callback(
+    Output('selected-data', 'children'),
+    [Input('lake', 'value')])
+def clean_data(lake):
+    df = pd.DataFrame(powell)
+
+    if lake == 'hdmlc':
+        df['1090'] = 10857000
+        df['1075'] = 9601000
+        df['1050'] = 7683000
+        # df['1045'] = 7326000
+        # df['1040'] = 6978000
+        # df['1035'] = 6638000
+        # df['1030'] = 6305000
+        df['1025'] = 5981000
+    elif lake == 'lakepowell':
+        df['power level'] = 6124000
+    chopped_df = df[df[5] != 0]
+    return chopped_df.to_json()
+
+@app.callback(
+    Output('lake-levels', 'figure'),
+    [Input('lake', 'value'),
+    Input('selected-water-data', 'children')])
+def lake_graph(lake, data):
+    data = pd.read_json(data)
+    data.iloc[:,4] = pd.to_datetime(data.iloc[:,4])
+    data.set_index(data.iloc[:,4], inplace=True)
+    df = data.sort_index()
+
+    traces = []
+
+    if lake == 'hdmlc':
+        for column in data.columns[3:]:
+            traces.append(go.Scatter(
+                y = df[column],
+                x = df.index,
+                name = column
+            ))
+    elif lake == 'lakepowell':
+        traces.append(go.Scatter(
+            y = df['5'],
+            x = df.index,
+            name='Water Level'
+        )),
+        traces.append(go.Scatter(
+            y = df['power level'],
+            x = df.index,
+            name = 'Power level'
+        )),
+    else:
+        traces.append(go.Scatter(
+            y = df['Value'],
+            x = df.index,
+            name='Water Level'
+        )),
+
+    layout = go.Layout(
+        height =400,
+        title = df['1'][0],
+        yaxis = {'title':'Volume (AF)'},
+    )
+    return {'data': traces, 'layout': layout}
+
+@app.callback(
+    Output('selected-water-data', 'children'),
+    [Input('lake', 'value')])
+def clean_data(lake):
+    df = pd.DataFrame(powell)
+
+    if lake == 'hdmlc':
+        df['1090'] = 10857000
+        df['1075'] = 9601000
+        df['1050'] = 7683000
+        # df['1045'] = 7326000
+        # df['1040'] = 6978000
+        # df['1035'] = 6638000
+        # df['1030'] = 6305000
+        df['1025'] = 5981000
+    elif lake == 'lakepowell':
+        df['power level'] = 6124000
+    chopped_df = df[df[5] != 0]
+    return chopped_df.to_json()
+
 
 @app.callback(Output('page-content', 'children'),
             [Input('url', 'pathname')])
