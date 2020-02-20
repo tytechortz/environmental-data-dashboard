@@ -12,12 +12,16 @@ app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
 
+capacities = {'LAKE POWELL': 24322000, 'Lake Mead': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
+
 today = time.strftime("%Y-%m-%d")
 print(today)
 
-url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
+# url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
 
-df_water = pd.read_csv('data.csv', skiprows=4)
+# df_water = pd.read_csv('data.csv', skiprows=4)
+
+
 
 def river_App():
     return html.Div(

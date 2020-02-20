@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 from homepage import Homepage
 from den_temps import temp_App, df_all_temps, current_year, ld, df_norms, df_rec_lows, df_rec_highs, year_count, today, last_day
 from ice import ice_App, sea_options, df, year_options, value_range, month_options
-from colorado_river import river_App, df_water
+from colorado_river import river_App
 import pandas as pd
 import numpy as np
 from numpy import arange,array,ones
@@ -15,8 +15,13 @@ from scipy import stats
 import psycopg2
 from sqlalchemy import create_engine
 from datetime import datetime, date, timedelta
+import time
+import csv 
+import requests
+# from water_connect import capacities, flaminggorge, powell_latest, powell
 
 
+today = time.strftime("%Y-%m-%d")
 
 app = dash.Dash()
 
@@ -27,11 +32,35 @@ app.layout = html.Div([
     html.Div(id = 'page-content')
 ])
 
+# columns = ['1','2','3','4','5','6']
+
+data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=' + today + '&format=csv'
+
+with requests.Session() as s:
+    download = s.get(data)
+
+    decoded_content = download.content.decode('utf-8')
+
+    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    for i in range(4): next(cr)
+    df_water = pd.DataFrame(cr)
+    my_list = list(cr)
+    for row in my_list:
+        print(row)
+
+
+
+print(df_water)
+
+
 @app.callback(
-    Output('selected-data', 'children'),
+    Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
-    df = pd.DataFrame(powell)
+
+    df_water = pd.DataFrame(powell)
+
+    # print(df_water)
 
     if lake == 'hdmlc':
         df['1090'] = 10857000
@@ -90,26 +119,6 @@ def lake_graph(lake, data):
         yaxis = {'title':'Volume (AF)'},
     )
     return {'data': traces, 'layout': layout}
-
-@app.callback(
-    Output('selected-water-data', 'children'),
-    [Input('lake', 'value')])
-def clean_data(lake):
-    df = pd.DataFrame(powell)
-
-    if lake == 'hdmlc':
-        df['1090'] = 10857000
-        df['1075'] = 9601000
-        df['1050'] = 7683000
-        # df['1045'] = 7326000
-        # df['1040'] = 6978000
-        # df['1035'] = 6638000
-        # df['1030'] = 6305000
-        df['1025'] = 5981000
-    elif lake == 'lakepowell':
-        df['power level'] = 6124000
-    chopped_df = df[df[5] != 0]
-    return chopped_df.to_json()
 
 
 @app.callback(Output('page-content', 'children'),
