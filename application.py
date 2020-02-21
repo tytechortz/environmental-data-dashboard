@@ -34,55 +34,61 @@ app.layout = html.Div([
 
 # columns = ['1','2','3','4','5','6']
 
-data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=' + today + '&format=csv'
 
-with requests.Session() as s:
-    download = s.get(data)
 
-    decoded_content = download.content.decode('utf-8')
+# with requests.Session() as s:
+#     download = s.get(data)
 
-    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-    for i in range(4): next(cr)
-    df_water = pd.DataFrame(cr)
-    print(df_water)
-    new_header = df_water.iloc[0]
-    df_water = df_water[1:]
-    df_water.columns = new_header
-    print(df_water)
-    df_water['Date'] = pd.to_datetime(df_water['Date'])
-    print(df_water)
+#     decoded_content = download.content.decode('utf-8')
+
+#     cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+#     for i in range(4): next(cr)
+#     df_water = pd.DataFrame(cr)
+#     print(df_water)
+#     new_header = df_water.iloc[0]
+#     df_water = df_water[1:]
+#     df_water.columns = new_header
+#     print(df_water)
+#     df_water['Date'] = pd.to_datetime(df_water['Date'])
+#     print(df_water)
+#     df_water = df_water.set_index('Date')
+#     print(df_water)
     
-    
-# for col in dfw.columns:
-#   print(col)
-dfw.columns = dfw.iloc[1]
-
-
-# print(dfw)
-print(type(dfw.index[1]))
-
 
 @app.callback(
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
+    data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=' + lake + '&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=' + today + '&format=csv'
 
-    df_water = pd.DataFrame(powell)
+    with requests.Session() as s:
+        download = s.get(data)
 
-    # print(df_water)
+        decoded_content = download.content.decode('utf-8')
+
+        cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+
+        for i in range(4): next(cr)
+        df_water = pd.DataFrame(cr)
+        new_header = df_water.iloc[0]
+        df_water = df_water[1:]
+        df_water.columns = new_header
+        # df_water['Date'] = pd.to_datetime(df_water['Date'])
+        # df_water = df_water.set_index('Date')
+        print(df_water)
 
     if lake == 'hdmlc':
-        df['1090'] = 10857000
-        df['1075'] = 9601000
-        df['1050'] = 7683000
+        df_water['1090'] = 10857000
+        df_water['1075'] = 9601000
+        df_water['1050'] = 7683000
         # df['1045'] = 7326000
         # df['1040'] = 6978000
         # df['1035'] = 6638000
         # df['1030'] = 6305000
-        df['1025'] = 5981000
+        df_water['1025'] = 5981000
     elif lake == 'lakepowell':
-        df['power level'] = 6124000
-    chopped_df = df[df[5] != 0]
+        df_water['power level'] = 6124000
+    chopped_df = df_water[df_water['Value'] != 0]
     return chopped_df.to_json()
 
 @app.callback(
@@ -90,10 +96,14 @@ def clean_data(lake):
     [Input('lake', 'value'),
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
-    data = pd.read_json(data)
-    data.iloc[:,4] = pd.to_datetime(data.iloc[:,4])
-    data.set_index(data.iloc[:,4], inplace=True)
-    df = data.sort_index()
+    df = pd.read_json(data)
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df.set_index('Date')
+    # data.index = pd.to_datetime(data.index)
+    print(df)
+    # data.iloc[:,4] = pd.to_datetime(data.iloc[:,4])
+    # data.set_index(data.iloc[:,4], inplace=True)
+    data = df.sort_index()
 
     traces = []
 
@@ -106,7 +116,7 @@ def lake_graph(lake, data):
             ))
     elif lake == 'lakepowell':
         traces.append(go.Scatter(
-            y = df['5'],
+            y = df['Value'],
             x = df.index,
             name='Water Level'
         )),
@@ -124,7 +134,7 @@ def lake_graph(lake, data):
 
     layout = go.Layout(
         height =400,
-        title = df['1'][0],
+        title = df['Site'][0],
         yaxis = {'title':'Volume (AF)'},
     )
     return {'data': traces, 'layout': layout}
