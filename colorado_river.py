@@ -93,7 +93,7 @@ def river_App():
                 ),
                 html.Div([
                     html.Div([
-                        html.Div(id='stats') 
+                        html.Div(id='water-stats') 
                     ],
                         className='round1'
                     ),

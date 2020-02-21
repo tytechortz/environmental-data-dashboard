@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 from homepage import Homepage
 from den_temps import temp_App, df_all_temps, current_year, ld, df_norms, df_rec_lows, df_rec_highs, year_count, today, last_day
 from ice import ice_App, sea_options, df, year_options, value_range, month_options
-from colorado_river import river_App
+from colorado_river import river_App, capacities
 import pandas as pd
 import numpy as np
 from numpy import arange,array,ones
@@ -48,6 +48,27 @@ def display_page(pathname):
 # Colorado River storage callbacks
 
 @app.callback(
+    Output('water-stats', 'children'),
+    [Input('lake', 'value'),
+    Input('site', 'children'),
+    Input('current-volume', 'children'),
+    Input('cvd', 'children')])
+def produce_stats(lake, site, data, date ):
+    print(capacities[site])
+    print(data)
+    fill_pct = data / capacities[site]
+    date = date[0:11]
+    
+    return html.Div([
+                html.Div('{} Volume'.format(date), style={'text-align':'center'}),
+                html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),
+                html.Div('Percent Full', style={'text-align':'center'}),
+                html.Div('{0:.0%}'.format(fill_pct), style={'text-align':'center'}),
+            ],
+                className='round1'
+            ),
+
+@app.callback(
     [Output('current-volume', 'children'),
     Output('site', 'children'),
     Output('cvd', 'children')],
@@ -60,10 +81,11 @@ def get_current_volume(lake, data):
 
     data.set_index(['Date'], inplace=True)
     data = data.sort_index()
- 
-    site = data.iloc[0, 1]
-    current_volume = data.iloc[-1,4]
-    current_volume_date = data.index[-1]
+    print(data)
+    site = data.iloc[-2, 0]
+    # print(site)
+    current_volume = data.iloc[-2,3]
+    current_volume_date = data.index[-2]
     cvd = str(current_volume_date)
 
     return current_volume, site, cvd
@@ -74,21 +96,21 @@ def get_current_volume(lake, data):
     Input('period', 'value'),
     Input('selected-water-data', 'children')])
 def produce_changes(lake, period, data):
-    print(period)
+    # print(period)
     df = pd.read_json(data)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
     data = df.sort_index()
-    print(data)
+    # print(data)
     current_volume = data.iloc[-2,3]
-    print(current_volume)
+    # print(current_volume)
     past_data = data.iloc[-(int(period)),3]
-    print(past_data)
+    # print(past_data)
     change = current_volume - past_data
     annual_min = data.resample('Y').min()
     annual_min_twok = annual_min[(annual_min.index.year > 1999)]
     rec_low = annual_min_twok['Value'].min()
-    dif_rl = data.iloc[0,3] - rec_low
+    dif_rl = data.iloc[-2,3] - rec_low
  
 
     return html.Div([
