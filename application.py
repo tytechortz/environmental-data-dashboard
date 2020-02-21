@@ -59,7 +59,7 @@ app.layout = html.Div([
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
-    data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=' + lake + '&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=' + today + '&format=csv'
+    data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=' + lake + '&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     with requests.Session() as s:
         download = s.get(data)
