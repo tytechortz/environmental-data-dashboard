@@ -18,7 +18,7 @@ from datetime import datetime, date, timedelta
 import time
 import csv 
 import requests
-# from water_connect import capacities, flaminggorge, powell_latest, powell
+
 
 
 today = time.strftime("%Y-%m-%d")
@@ -32,28 +32,75 @@ app.layout = html.Div([
     html.Div(id = 'page-content')
 ])
 
-# columns = ['1','2','3','4','5','6']
+@app.callback(Output('page-content', 'children'),
+            [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/den-temps':
+        return temp_App()
+    elif pathname == '/ice':
+        return ice_App()
+    elif pathname == '/colorado-river':
+        return river_App()
+    else:
+        return Homepage()
 
 
+# Colorado River storage callbacks
 
-# with requests.Session() as s:
-#     download = s.get(data)
+@app.callback(
+    [Output('current-volume', 'children'),
+    Output('site', 'children'),
+    Output('cvd', 'children')],
+    [Input('lake', 'value'),
+    Input('selected-water-data', 'children')])
+def get_current_volume(lake, data):
+    data = pd.read_json(data)
+ 
+    data['Date'] = pd.to_datetime(data['Date'])
 
-#     decoded_content = download.content.decode('utf-8')
+    data.set_index(['Date'], inplace=True)
+    data = data.sort_index()
+ 
+    site = data.iloc[0, 1]
+    current_volume = data.iloc[-1,4]
+    current_volume_date = data.index[-1]
+    cvd = str(current_volume_date)
 
-#     cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-#     for i in range(4): next(cr)
-#     df_water = pd.DataFrame(cr)
-#     print(df_water)
-#     new_header = df_water.iloc[0]
-#     df_water = df_water[1:]
-#     df_water.columns = new_header
-#     print(df_water)
-#     df_water['Date'] = pd.to_datetime(df_water['Date'])
-#     print(df_water)
-#     df_water = df_water.set_index('Date')
-#     print(df_water)
-    
+    return current_volume, site, cvd
+
+@app.callback(
+    Output('changes', 'children'),
+    [Input('lake', 'value'),
+    Input('period', 'value'),
+    Input('selected-water-data', 'children')])
+def produce_changes(lake, period, data):
+    print(period)
+    df = pd.read_json(data)
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df.set_index('Date')
+    data = df.sort_index()
+    print(data)
+    current_volume = data.iloc[-2,3]
+    print(current_volume)
+    past_data = data.iloc[-(int(period)),3]
+    print(past_data)
+    change = current_volume - past_data
+    annual_min = data.resample('Y').min()
+    annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+    rec_low = annual_min_twok['Value'].min()
+    dif_rl = data.iloc[0,3] - rec_low
+ 
+
+    return html.Div([
+                html.Div('Change', style={'text-align':'center'}),
+                html.Div('{:,.0f}'.format(change), style={'text-align':'center'}),
+                html.Div('Record Low', style={'text-align':'center'}),
+                html.Div('{:,.0f}'.format(rec_low), style={'text-align':'center'}),
+                html.Div('Difference', style={'text-align':'center'}),
+                html.Div('{:,.0f}'.format(dif_rl), style={'text-align':'center'}),
+            ],
+                className='round1'
+            ),
 
 @app.callback(
     Output('selected-water-data', 'children'),
@@ -73,9 +120,6 @@ def clean_data(lake):
         new_header = df_water.iloc[0]
         df_water = df_water[1:]
         df_water.columns = new_header
-        # df_water['Date'] = pd.to_datetime(df_water['Date'])
-        # df_water = df_water.set_index('Date')
-        print(df_water)
 
     if lake == 'hdmlc':
         df_water['1090'] = 10857000
@@ -99,10 +143,6 @@ def lake_graph(lake, data):
     df = pd.read_json(data)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
-    # data.index = pd.to_datetime(data.index)
-    print(df)
-    # data.iloc[:,4] = pd.to_datetime(data.iloc[:,4])
-    # data.set_index(data.iloc[:,4], inplace=True)
     data = df.sort_index()
 
     traces = []
@@ -138,19 +178,6 @@ def lake_graph(lake, data):
         yaxis = {'title':'Volume (AF)'},
     )
     return {'data': traces, 'layout': layout}
-
-
-@app.callback(Output('page-content', 'children'),
-            [Input('url', 'pathname')])
-def display_page(pathname):
-    if pathname == '/den-temps':
-        return temp_App()
-    elif pathname == '/ice':
-        return ice_App()
-    elif pathname == '/colorado-river':
-        return river_App()
-    else:
-        return Homepage()
 
 
 # Temperature callbacks

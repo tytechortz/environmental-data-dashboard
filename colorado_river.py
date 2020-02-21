@@ -101,11 +101,11 @@ def river_App():
                         dcc.RadioItems(
                             id='period',
                             options=[
-                                {'label':'D', 'value':'1'},
-                                {'label':'W', 'value':'7'},
-                                {'label':'Y', 'value':'365'},
+                                {'label':'D', 'value':'3'},
+                                {'label':'W', 'value':'9'},
+                                {'label':'Y', 'value':'367'},
                             ],
-                            value='1',
+                            value='3',
                             labelStyle={'display': 'inline'},
                             ), 
                     ],
