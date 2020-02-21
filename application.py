@@ -1268,6 +1268,19 @@ def update_heat_map(all_data, selected_value, normals, selected_product):
         )
     }
 
+@app.callback(Output('output-data', 'children'),
+             [Input('product', 'value')])
+def update_data(product):
+
+    temperatures = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=' + ld + '&endDate=' + today + '&units=standard')
+
+    most_recent_data_date = last_day - timedelta(days=1)
+    mrd = most_recent_data_date.strftime("%Y-%m-%d")
+
+    engine = create_engine('postgresql://postgres:1234@localhost:5432/denver_temps')
+    temperatures.to_sql('temps', engine, if_exists='append')
+
+
 # Ice callbacks
 
 @app.callback(

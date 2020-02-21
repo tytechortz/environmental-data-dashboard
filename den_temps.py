@@ -113,9 +113,9 @@ def temp_App():
                 # html.Div([
                 #     html.Button('Update Data', id='data-button'),
                 # ]),
-                # html.Div([
-                #     html.Div(id='output-data-button')
-                # ]),
+                html.Div([
+                    html.Div(id='output-data')
+                ]),
 
             ],
                 className='row'
