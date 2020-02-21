@@ -12,3 +12,9 @@ old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
 old_data = old_data.drop(['year', 'month', 'day'], axis=1)
 # data = data.iloc[10000:]
 print(old_data)
+
+new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
+
+new_data = new_data.drop(['month', 'week'], axis=1)
+
+print(new_data)
