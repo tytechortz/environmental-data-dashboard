@@ -54,8 +54,6 @@ def display_page(pathname):
     Input('current-volume', 'children'),
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
-    print(capacities[site])
-    print(data)
     fill_pct = data / capacities[site]
     date = date[0:11]
     
@@ -81,7 +79,6 @@ def get_current_volume(lake, data):
 
     data.set_index(['Date'], inplace=True)
     data = data.sort_index()
-    print(data)
     site = data.iloc[-2, 0]
     # print(site)
     current_volume = data.iloc[-2,3]
