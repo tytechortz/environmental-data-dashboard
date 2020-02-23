@@ -50,7 +50,7 @@ body = dbc.Container([
          'Colorado River Water Storage',
          ),
          html.P(
-            """ Coming Soon"""
+            """ Colorado River water storage in Lake Powell and Lake Mead.  Data from U.S. Bureau of Reclamation"""
          ),
          dbc.Button("Open App", color="primary", href="/colorado-river"),
       ],

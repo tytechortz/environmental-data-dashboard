@@ -27,28 +27,33 @@ def river_App():
     return html.Div(
         [
             html.Div([
-            html.Div([
-              html.Div([
-                dcc.Link('Home', href='/'),
-              ],
-                className='two columns'
-              ),
-              html.Div([
-                dcc.Link('Arctic Ice', href='/ice'),
-              ],
-                className='two columns'
-              ),
-              html.Div([
-                dcc.Link('Denver Temps', href='/den-temps'),
-              ],
-                className='two columns'
-              ),
+                html.Div([
+                    html.Div([
+                        dcc.Link('Home', href='/'),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Link('Arctic Ice', href='/ice'),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Link('Denver Temps', href='/den-temps'),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Link('CO2', href='/co2'),
+                    ],
+                        className='two columns'
+                    ),
+                ],
+                className='twelve columns'
+                ),
             ],
-              className='twelve columns'
+                className='row'
             ),
-          ],
-            className='row'
-          ),
             html.Div([
                 html.H2(
                     'Colorado River Water Storage',

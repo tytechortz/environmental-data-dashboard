@@ -55,8 +55,22 @@ def co2_App():
                     ],
                         className='two columns'
                     ),
+                    html.Div([
+                        dcc.Link('Colorado River', href='/colorado-river'),
+                    ],
+                        className='two columns'
+                    ),
                 ],
                 className='twelve columns'
+                ),
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.H2(
+                    'Atmospheric CO2 Concentration',
+                    className='twelve columns',
+                    style={'text-align': 'center'}
                 ),
             ],
                 className='row'
