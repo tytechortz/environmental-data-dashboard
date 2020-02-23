@@ -64,6 +64,26 @@ body = dbc.Container([
    ],
       className='row'
    ),
+   html.Div([
+      html.Div([
+         html.H2(
+         'Atmospheric CO2 Concentration',
+         ),
+         html.P(
+            """ Coming Soon"""
+         ),
+         dbc.Button("Open App", color="primary", href="/co2"),
+      ],
+         className='six columns'
+      ),
+      html.Div([
+         html.Img(src='assets/hoover-dam.jpg', height=350)
+      ],
+         className='five columns'
+      ),
+   ],
+      className='row'
+   ),
 
 ])
 
