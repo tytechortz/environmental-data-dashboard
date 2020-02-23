@@ -4,6 +4,7 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import plotly.graph_objs as go
+import numpy as np
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
@@ -30,6 +31,8 @@ new_data = new_data[datetime(2019, 1, 1):]
 
 frames = [old_data, new_data]
 co2_data = pd.concat(frames)
+co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
+print(co2_data)
 
 fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'])])
 
