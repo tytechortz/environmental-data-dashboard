@@ -75,6 +75,31 @@ def co2_App():
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(
+                        id='co2',
+                    ),
+                ],
+                    className='nine columns'
+                ),
+                html.Div([
+                    html.Div([
+                        html.Div(id='co2-stats') 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div(id='co2-changes') 
+                    ],
+                        className='round1'
+                    ),
+                ],
+                    className='three columns'
+                ),
+            ],
+                className='row'
+            ),
         ]
     )
 
