@@ -3,7 +3,7 @@ from datetime import datetime
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-
+import plotly.graph_objs as go
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
@@ -29,8 +29,10 @@ new_data = new_data.drop(['day'], axis=1)
 new_data = new_data[datetime(2019, 1, 1):]
 
 frames = [old_data, new_data]
-data = pd.concat(frames)
-print(data)
+co2_data = pd.concat(frames)
+
+fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'])])
+
 
 # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
 #     print(data)
@@ -78,7 +80,8 @@ def co2_App():
             html.Div([
                 html.Div([
                     dcc.Graph(
-                        id='co2',
+                        id='co2-levels',
+                        figure=fig
                     ),
                 ],
                     className='nine columns'
@@ -100,6 +103,7 @@ def co2_App():
             ],
                 className='row'
             ),
+            # html.Div(id='co2-data', style={'display': 'none'}),
         ]
     )
 
