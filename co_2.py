@@ -1,5 +1,13 @@
 import pandas as pd
 from datetime import datetime
+import dash
+import dash_html_components as html
+import dash_core_components as dcc
+
+
+app = dash.Dash(__name__)
+app.config['suppress_callback_exceptions']=True
+
 
 old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[146])
 
@@ -22,6 +30,38 @@ new_data = new_data[datetime(2019, 1, 1):]
 
 frames = [old_data, new_data]
 data = pd.concat(frames)
+print(data)
 
 # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
 #     print(data)
+
+def co2_App():
+    return html.Div(
+        [
+            html.Div([
+                html.Div([
+                    html.Div([
+                        dcc.Link('Home', href='/'),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Link('Arctic Ice', href='/ice'),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Link('Denver Temps', href='/den-temps'),
+                    ],
+                        className='two columns'
+                    ),
+                ],
+                className='twelve columns'
+                ),
+            ],
+                className='row'
+            ),
+        ]
+    )
+
+app.layout = co2_App
