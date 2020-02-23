@@ -77,7 +77,7 @@ body = dbc.Container([
          className='six columns'
       ),
       html.Div([
-         html.Img(src='assets/hoover-dam.jpg', height=350)
+         html.Img(src='assets/mauna-loa.jpg', height=350)
       ],
          className='five columns'
       ),
