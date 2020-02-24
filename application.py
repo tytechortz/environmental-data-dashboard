@@ -60,79 +60,104 @@ def display_page(pathname):
 
 # Colorado River storage callbacks
 
-@app.callback(
-    Output('water-stats', 'children'),
-    [Input('lake', 'value'),
-    Input('site', 'children'),
-    Input('current-volume', 'children'),
-    Input('cvd', 'children')])
-def produce_stats(lake, site, data, date ):
-    fill_pct = data / capacities[site]
-    date = date[0:11]
+# @app.callback(
+#     Output('water-stats', 'children'),
+#     [Input('lake', 'value'),
+#     Input('site', 'children'),
+#     Input('current-volume', 'children'),
+#     Input('cvd', 'children')])
+# def produce_stats(lake, site, data, date ):
+#     # print(data)
+#     if lake == 'lakepowell' or lake == 'hdmlc':
+#         fill_pct = data / capacities[site]
+#         date = date[0:11]
+        
+#         return html.Div([
+#                     html.Div('{} Volume'.format(date), style={'text-align':'center'}),
+#                     html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),
+#                     html.Div('Percent Full', style={'text-align':'center'}),
+#                     html.Div('{0:.0%}'.format(fill_pct), style={'text-align':'center'}),
+#                 ],
+#                     className='round1'
+#                 ),
+#     elif lake == 'combo':
+#         return html.Div([
+#             html.Div('{}')    
+#         ])
+
+# @app.callback(
+#     [Output('current-volume', 'children'),
+#     Output('site', 'children'),
+#     Output('cvd', 'children')],
+#     [Input('lake', 'value'),
+#     Input('selected-water-data', 'children')])
+# def get_current_volume(lake, data):
+#     if lake == 'lakepowell' or lake == 'hdmlc':
+#         data = pd.read_json(data)
     
-    return html.Div([
-                html.Div('{} Volume'.format(date), style={'text-align':'center'}),
-                html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),
-                html.Div('Percent Full', style={'text-align':'center'}),
-                html.Div('{0:.0%}'.format(fill_pct), style={'text-align':'center'}),
-            ],
-                className='round1'
-            ),
+#         data['Date'] = pd.to_datetime(data['Date'])
 
-@app.callback(
-    [Output('current-volume', 'children'),
-    Output('site', 'children'),
-    Output('cvd', 'children')],
-    [Input('lake', 'value'),
-    Input('selected-water-data', 'children')])
-def get_current_volume(lake, data):
-    data = pd.read_json(data)
+#         data.set_index(['Date'], inplace=True)
+#         data = data.sort_index()
+#         site = data.iloc[-2, 0]
+#         # print(site)
+#         current_volume = data.iloc[-2,3]
+#         current_volume_date = data.index[-2]
+#         cvd = str(current_volume_date)
+
+#         return current_volume, site, cvd
+#     elif lake == 'combo':
+#         data = pd.read_json(data)
+#         site = 'Lake Powell and Lake Mead'
+#         current_volume = data.iloc[-2,3]
+#         current_volume_date = data.index[-2]
+#         cvd = str(current_volume_date)
+
+#         return current_volume, site, cvd
+
+
+# @app.callback(
+#     Output('changes', 'children'),
+#     [Input('lake', 'value'),
+#     Input('period', 'value'),
+#     Input('selected-water-data', 'children')])
+# def produce_changes(lake, period, data):
+#     df = pd.read_json(data)
+#     # print(df)
+#     if lake == 'lakepowell' or 'hdmlc':
+#         df['Date'] = pd.to_datetime(df['Date'])
+#         df = df.set_index('Date')
+#         data = df.sort_index()
+#         # print(data)
+#         current_volume = data.iloc[-2,3]
+#         # print(current_volume)
+#         past_data = data.iloc[-(int(period)),3]
+#         # print(past_data)
+#     if lake == 'combo':
+#         df.index = pd.to_datetime(df.index)
+#         data = df.sort_index()
+#         # print(data)
+#         current_volume = data.iloc[-2,3]
+#         # print(current_volume)
+#         past_data = data.iloc[-(int(period)),3]
+
+#     change = current_volume - past_data
+#     annual_min = data.resample('Y').min()
+#     annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+#     rec_low = annual_min_twok['Value'].min()
+#     dif_rl = data.iloc[-2,3] - rec_low
  
-    data['Date'] = pd.to_datetime(data['Date'])
 
-    data.set_index(['Date'], inplace=True)
-    data = data.sort_index()
-    site = data.iloc[-2, 0]
-    # print(site)
-    current_volume = data.iloc[-2,3]
-    current_volume_date = data.index[-2]
-    cvd = str(current_volume_date)
-
-    return current_volume, site, cvd
-
-@app.callback(
-    Output('changes', 'children'),
-    [Input('lake', 'value'),
-    Input('period', 'value'),
-    Input('selected-water-data', 'children')])
-def produce_changes(lake, period, data):
-    # print(period)
-    df = pd.read_json(data)
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.set_index('Date')
-    data = df.sort_index()
-    # print(data)
-    current_volume = data.iloc[-2,3]
-    # print(current_volume)
-    past_data = data.iloc[-(int(period)),3]
-    # print(past_data)
-    change = current_volume - past_data
-    annual_min = data.resample('Y').min()
-    annual_min_twok = annual_min[(annual_min.index.year > 1999)]
-    rec_low = annual_min_twok['Value'].min()
-    dif_rl = data.iloc[-2,3] - rec_low
- 
-
-    return html.Div([
-                html.Div('Change', style={'text-align':'center'}),
-                html.Div('{:,.0f}'.format(change), style={'text-align':'center'}),
-                html.Div('Record Low', style={'text-align':'center'}),
-                html.Div('{:,.0f}'.format(rec_low), style={'text-align':'center'}),
-                html.Div('Difference', style={'text-align':'center'}),
-                html.Div('{:,.0f}'.format(dif_rl), style={'text-align':'center'}),
-            ],
-                className='round1'
-            ),
+#     return html.Div([
+#                 html.Div('Change', style={'text-align':'center'}),
+#                 html.Div('{:,.0f}'.format(change), style={'text-align':'center'}),
+#                 html.Div('Record Low', style={'text-align':'center'}),
+#                 html.Div('{:,.0f}'.format(rec_low), style={'text-align':'center'}),
+#                 html.Div('Difference', style={'text-align':'center'}),
+#                 html.Div('{:,.0f}'.format(dif_rl), style={'text-align':'center'}),
+#             ],
+#                 className='round1'
+#             ),
 
 @app.callback(
     Output('selected-water-data', 'children'),
@@ -161,7 +186,7 @@ def clean_data(lake):
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
-            print(df_water)
+            # print(df_water)
             df_water['power level'] = 6124000
 
         chopped_df = df_water[df_water['Value'] != 0]
@@ -193,7 +218,7 @@ def clean_data(lake):
             df_water['1025'] = 5981000
 
         chopped_df = df_water[df_water['Value'] != 0]
-        print(chopped_df)
+        # print(chopped_df)
         return chopped_df.to_json()
 
     elif lake == 'combo':
@@ -221,25 +246,28 @@ def clean_data(lake):
             df_mead_water.columns = new_mead_header
 
         
-        df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
-        df_powell_water.index = df_powell_water['Date']
+        # df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
+        # df_powell_water.index = df_powell_water['Date']
         # df_powell_water = df_powell_water.drop([''])
-        df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
-        df_mead_water.index = df_mead_water['Date']
+        # df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
+        # df_mead_water.index = df_mead_water['Date']
 
-        df_mead_water = df_mead_water[:datetime(1963, 6, 28)]
+        df_mead_water = df_mead_water[:20695]
         # print(df_powell_water)
         # print(df_mead_water)
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
         # print(df_total)
-        df_total = df_total.drop(['Date_y', 'Date_x', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
-        print(df_total)
-        
-        
+        df_total.rename(columns={'Date_x':'Date'}, inplace=True)
+        # print(df_total)
+        df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         df_total['Value_x'] = df_total['Value_x'].astype(int)
         df_total['Value_y'] = df_total['Value_y'].astype(int)
-        df_total['total_volume'] = df_total['Value_x'] + df_total['Value_y']
-        print(df_total)
+        df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
+        # print(df_total)
+        chopped_df = df_total[df_total['Value'] != 0]
+        # print(chopped_df)
+        return chopped_df.to_json()
+
     # if lake == 'hdmlc':
     #     df_mead_water['1090'] = 10857000
     #     df_mead_water['1075'] = 9601000
@@ -261,13 +289,13 @@ def clean_data(lake):
     [Input('lake', 'value'),
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
+    print(lake)
     df = pd.read_json(data)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
     data = df.sort_index()
-
+    print(df)
     traces = []
-
     if lake == 'hdmlc':
         for column in data.columns[3:]:
             traces.append(go.Scatter(
@@ -286,7 +314,8 @@ def lake_graph(lake, data):
             x = df.index,
             name = 'Power level'
         )),
-    else:
+    elif lake == 'combo':
+        print(data)
         traces.append(go.Scatter(
             y = df['Value'],
             x = df.index,
@@ -295,7 +324,7 @@ def lake_graph(lake, data):
 
     layout = go.Layout(
         height =400,
-        title = df['Site'][0],
+        # title = df['Site'][0],
         yaxis = {'title':'Volume (AF)'},
     )
     return {'data': traces, 'layout': layout}
