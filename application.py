@@ -231,11 +231,15 @@ def clean_data(lake):
         # print(df_powell_water)
         # print(df_mead_water)
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-        print(df_total)
+        # print(df_total)
         df_total = df_total.drop(['Date_y', 'Date_x', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         print(df_total)
-        # df_total['total_volume']
-
+        
+        
+        df_total['Value_x'] = df_total['Value_x'].astype(int)
+        df_total['Value_y'] = df_total['Value_y'].astype(int)
+        df_total['total_volume'] = df_total['Value_x'] + df_total['Value_y']
+        print(df_total)
     # if lake == 'hdmlc':
     #     df_mead_water['1090'] = 10857000
     #     df_mead_water['1075'] = 9601000
