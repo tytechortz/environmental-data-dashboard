@@ -36,8 +36,10 @@ max_co2 = co2_data['value'].max()
 print(max_co2)
 max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
 print(max_co2_date)
+current_co2 = co2_data['value'].iloc[-1]
+current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
 
-fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'])])
+fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'], mode='markers')])
 
 
 
