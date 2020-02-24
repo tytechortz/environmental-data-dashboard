@@ -142,8 +142,8 @@ def clean_data(lake):
 
     mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
-    print(powell_data)
-    print(mead_data)
+    # print(powell_data)
+    # print(mead_data)
 
     # combo_data = 
 
@@ -165,7 +165,7 @@ def clean_data(lake):
             df_water['power level'] = 6124000
 
         chopped_df = df_water[df_water['Value'] != 0]
-        print(chopped_df)
+        # print(chopped_df)
         return chopped_df.to_json()
             
 
@@ -182,7 +182,7 @@ def clean_data(lake):
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
-            print(df_water)
+            # print(df_water)
             df_water['1090'] = 10857000
             df_water['1075'] = 9601000
             df_water['1050'] = 7683000
@@ -223,13 +223,18 @@ def clean_data(lake):
         
         df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
         df_powell_water.index = df_powell_water['Date']
+        # df_powell_water = df_powell_water.drop([''])
         df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
         df_mead_water.index = df_mead_water['Date']
 
         df_mead_water = df_mead_water[:datetime(1963, 6, 28)]
-        print(df_powell_water)
-        print(df_mead_water)
-
+        # print(df_powell_water)
+        # print(df_mead_water)
+        df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
+        print(df_total)
+        df_total = df_total.drop(['Date_y', 'Date_x', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
+        print(df_total)
+        # df_total['total_volume']
 
     # if lake == 'hdmlc':
     #     df_mead_water['1090'] = 10857000
