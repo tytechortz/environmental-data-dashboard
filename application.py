@@ -222,7 +222,11 @@ def clean_data(lake):
 
         
         df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
+        df_powell_water.index = df_powell_water['Date']
         df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
+        df_mead_water.index = df_mead_water['Date']
+
+        df_mead_water = df_mead_water[:datetime(1963, 6, 28)]
         print(df_powell_water)
         print(df_mead_water)
 
