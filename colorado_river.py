@@ -73,9 +73,9 @@ def river_App():
                             {'label': 'Powell', 'value': 'lakepowell'},
                             {'label': 'Mead', 'value': 'hdmlc'},
                             {'label': 'Mead + Powell', 'value': 'combo'},
-                            {'label': 'Flaming Gorge', 'value': 'flaminggorge'},
-                            {'label': 'Navajo', 'value': 'navajo'},
-                            {'label': 'Blue Mesa', 'value': 'bluemesa'},
+                            # {'label': 'Flaming Gorge', 'value': 'flaminggorge'},
+                            # {'label': 'Navajo', 'value': 'navajo'},
+                            # {'label': 'Blue Mesa', 'value': 'bluemesa'},
                         ],
                         value='lakepowell'
                         ),

@@ -138,34 +138,110 @@ def produce_changes(lake, period, data):
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
-    data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=' + lake + '&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+    powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
-    with requests.Session() as s:
-        download = s.get(data)
+    mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
-        decoded_content = download.content.decode('utf-8')
+    print(powell_data)
+    print(mead_data)
 
-        cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    # combo_data = 
 
-        for i in range(4): next(cr)
-        df_water = pd.DataFrame(cr)
-        new_header = df_water.iloc[0]
-        df_water = df_water[1:]
-        df_water.columns = new_header
+    if lake == 'lakepowell':
 
-    if lake == 'hdmlc':
-        df_water['1090'] = 10857000
-        df_water['1075'] = 9601000
-        df_water['1050'] = 7683000
-        # df['1045'] = 7326000
-        # df['1040'] = 6978000
-        # df['1035'] = 6638000
-        # df['1030'] = 6305000
-        df_water['1025'] = 5981000
-    elif lake == 'lakepowell':
-        df_water['power level'] = 6124000
-    chopped_df = df_water[df_water['Value'] != 0]
-    return chopped_df.to_json()
+        with requests.Session() as s:
+            download = s.get(powell_data)
+
+            decoded_content = download.content.decode('utf-8')
+
+            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+
+            for i in range(4): next(cr)
+            df_water = pd.DataFrame(cr)
+            new_header = df_water.iloc[0]
+            df_water = df_water[1:]
+            df_water.columns = new_header
+            print(df_water)
+            df_water['power level'] = 6124000
+
+        chopped_df = df_water[df_water['Value'] != 0]
+        print(chopped_df)
+        return chopped_df.to_json()
+            
+
+    elif lake == 'hdmlc':
+        with requests.Session() as s:
+            download = s.get(mead_data)
+
+            decoded_content = download.content.decode('utf-8')
+
+            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+
+            for i in range(4): next(cr)
+            df_water = pd.DataFrame(cr)
+            new_header = df_water.iloc[0]
+            df_water = df_water[1:]
+            df_water.columns = new_header
+            print(df_water)
+            df_water['1090'] = 10857000
+            df_water['1075'] = 9601000
+            df_water['1050'] = 7683000
+            # df['1045'] = 7326000
+            # df['1040'] = 6978000
+            # df['1035'] = 6638000
+            # df['1030'] = 6305000
+            df_water['1025'] = 5981000
+
+        chopped_df = df_water[df_water['Value'] != 0]
+        print(chopped_df)
+        return chopped_df.to_json()
+
+    elif lake == 'combo':
+        with requests.Session() as s:
+            p_download = s.get(powell_data)
+
+            p_decoded_content = p_download.content.decode('utf-8')
+
+            crp = csv.reader(p_decoded_content.splitlines(), delimiter=',')
+
+            for i in range(4): next(crp)
+            df_powell_water = pd.DataFrame(crp)
+            new_powell_header = df_powell_water.iloc[0]
+            df_powell_water = df_powell_water[1:]
+            df_powell_water.columns = new_powell_header
+
+        with requests.Session() as t:
+            m_download = t.get(mead_data)
+            m_decoded_content = m_download.content.decode('utf-8')
+            crm = csv.reader(m_decoded_content.splitlines(), delimiter=',')
+            for i in range(4): next(crm)
+            df_mead_water = pd.DataFrame(crm)
+            new_mead_header = df_mead_water.iloc[0]
+            df_mead_water = df_mead_water[1:]
+            df_mead_water.columns = new_mead_header
+
+        
+        df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
+        df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
+        print(df_powell_water)
+        print(df_mead_water)
+
+
+    # if lake == 'hdmlc':
+    #     df_mead_water['1090'] = 10857000
+    #     df_mead_water['1075'] = 9601000
+    #     df_mead_water['1050'] = 7683000
+    #     # df['1045'] = 7326000
+    #     # df['1040'] = 6978000
+    #     # df['1035'] = 6638000
+    #     # df['1030'] = 6305000
+    #     df_mead_water['1025'] = 5981000
+    # elif lake == 'lakepowell':
+    #     df_powell_water['power level'] = 6124000
+
+    # chopped_df = df_water[df_water['Value'] != 0]
+    # print(chopped_df)
+    # return chopped_df.to_json()
 
 @app.callback(
     Output('lake-levels', 'figure'),
