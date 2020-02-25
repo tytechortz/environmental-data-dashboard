@@ -60,60 +60,63 @@ def display_page(pathname):
 
 # Colorado River storage callbacks
 
-# @app.callback(
-#     Output('water-stats', 'children'),
-#     [Input('lake', 'value'),
-#     Input('site', 'children'),
-#     Input('current-volume', 'children'),
-#     Input('cvd', 'children')])
-# def produce_stats(lake, site, data, date ):
-#     # print(data)
-#     if lake == 'lakepowell' or lake == 'hdmlc':
-#         fill_pct = data / capacities[site]
-#         date = date[0:11]
+@app.callback(
+    Output('water-stats', 'children'),
+    [Input('lake', 'value'),
+    Input('site', 'children'),
+    Input('current-volume', 'children'),
+    Input('cvd', 'children')])
+def produce_stats(lake, site, data, date ):
+    print(data)
+    if lake == 'lakepowell' or lake == 'hdmlc':
+        fill_pct = data / capacities[site]
+        date = date[0:11]
         
-#         return html.Div([
-#                     html.Div('{} Volume'.format(date), style={'text-align':'center'}),
-#                     html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),
-#                     html.Div('Percent Full', style={'text-align':'center'}),
-#                     html.Div('{0:.0%}'.format(fill_pct), style={'text-align':'center'}),
-#                 ],
-#                     className='round1'
-#                 ),
-#     elif lake == 'combo':
-#         return html.Div([
-#             html.Div('{}')    
-#         ])
+        return html.Div([
+                    html.Div('{} Volume'.format(date), style={'text-align':'center'}),
+                    html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),
+                    html.Div('Percent Full', style={'text-align':'center'}),
+                    html.Div('{0:.0%}'.format(fill_pct), style={'text-align':'center'}),
+                ],
+                    className='round1'
+                ),
+    elif lake == 'combo':
+        date = date[0:11]
+        return html.Div([
+            html.Div('{} Volume'.format(date), style={'text-align':'center'}),
+            html.Div('{:,.0f}'.format(data), style={'text-align':'center'}),      
+        ])
 
-# @app.callback(
-#     [Output('current-volume', 'children'),
-#     Output('site', 'children'),
-#     Output('cvd', 'children')],
-#     [Input('lake', 'value'),
-#     Input('selected-water-data', 'children')])
-# def get_current_volume(lake, data):
-#     if lake == 'lakepowell' or lake == 'hdmlc':
-#         data = pd.read_json(data)
+@app.callback(
+    [Output('current-volume', 'children'),
+    Output('site', 'children'),
+    Output('cvd', 'children')],
+    [Input('lake', 'value'),
+    Input('selected-water-data', 'children')])
+def get_current_volume(lake, data):
+    if lake == 'lakepowell' or lake == 'hdmlc':
+        data = pd.read_json(data)
     
-#         data['Date'] = pd.to_datetime(data['Date'])
+        data['Date'] = pd.to_datetime(data['Date'])
 
-#         data.set_index(['Date'], inplace=True)
-#         data = data.sort_index()
-#         site = data.iloc[-2, 0]
-#         # print(site)
-#         current_volume = data.iloc[-2,3]
-#         current_volume_date = data.index[-2]
-#         cvd = str(current_volume_date)
+        data.set_index(['Date'], inplace=True)
+        data = data.sort_index()
+        site = data.iloc[-2, 0]
+        # print(site)
+        current_volume = data.iloc[-2,3]
+        current_volume_date = data.index[-2]
+        cvd = str(current_volume_date)
 
-#         return current_volume, site, cvd
-#     elif lake == 'combo':
-#         data = pd.read_json(data)
-#         site = 'Lake Powell and Lake Mead'
-#         current_volume = data.iloc[-2,3]
-#         current_volume_date = data.index[-2]
-#         cvd = str(current_volume_date)
+        return current_volume, site, cvd
+    elif lake == 'combo':
+        data = pd.read_json(data)
+        site = data.iloc[-1, 0]
+        # current_volume = data.iloc[-2,3]
+        current_volume = data['Value'][-1]
+        current_volume_date = data.index[-1]
+        cvd = str(current_volume_date)
 
-#         return current_volume, site, cvd
+        return current_volume, site, cvd
 
 
 # @app.callback(
@@ -166,11 +169,6 @@ def clean_data(lake):
     powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
-
-    # print(powell_data)
-    # print(mead_data)
-
-    # combo_data = 
 
     if lake == 'lakepowell':
 
@@ -245,44 +243,19 @@ def clean_data(lake):
             df_mead_water = df_mead_water[1:]
             df_mead_water.columns = new_mead_header
 
-        
-        # df_powell_water['Date'] = pd.to_datetime(df_powell_water['Date'])
-        # df_powell_water.index = df_powell_water['Date']
-        # df_powell_water = df_powell_water.drop([''])
-        # df_mead_water['Date'] = pd.to_datetime(df_mead_water['Date'])
-        # df_mead_water.index = df_mead_water['Date']
-
         df_mead_water = df_mead_water[:20695]
-        # print(df_powell_water)
-        # print(df_mead_water)
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-        # print(df_total)
+    
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
-        # print(df_total)
+     
         df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         df_total['Value_x'] = df_total['Value_x'].astype(int)
         df_total['Value_y'] = df_total['Value_y'].astype(int)
         df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
-        # print(df_total)
+      
         chopped_df = df_total[df_total['Value'] != 0]
-        # print(chopped_df)
+    
         return chopped_df.to_json()
-
-    # if lake == 'hdmlc':
-    #     df_mead_water['1090'] = 10857000
-    #     df_mead_water['1075'] = 9601000
-    #     df_mead_water['1050'] = 7683000
-    #     # df['1045'] = 7326000
-    #     # df['1040'] = 6978000
-    #     # df['1035'] = 6638000
-    #     # df['1030'] = 6305000
-    #     df_mead_water['1025'] = 5981000
-    # elif lake == 'lakepowell':
-    #     df_powell_water['power level'] = 6124000
-
-    # chopped_df = df_water[df_water['Value'] != 0]
-    # print(chopped_df)
-    # return chopped_df.to_json()
 
 @app.callback(
     Output('lake-levels', 'figure'),
@@ -297,6 +270,7 @@ def lake_graph(lake, data):
     print(df)
     traces = []
     if lake == 'hdmlc':
+        title = df['Site'][0]
         for column in data.columns[3:]:
             traces.append(go.Scatter(
                 y = df[column],
@@ -304,6 +278,7 @@ def lake_graph(lake, data):
                 name = column
             ))
     elif lake == 'lakepowell':
+        title = df['Site'][0]
         traces.append(go.Scatter(
             y = df['Value'],
             x = df.index,
@@ -315,6 +290,7 @@ def lake_graph(lake, data):
             name = 'Power level'
         )),
     elif lake == 'combo':
+        title = 'Lake Powell and Lake Mead'
         print(data)
         traces.append(go.Scatter(
             y = df['Value'],
@@ -324,7 +300,7 @@ def lake_graph(lake, data):
 
     layout = go.Layout(
         height =400,
-        # title = df['Site'][0],
+        title = title,
         yaxis = {'title':'Volume (AF)'},
     )
     return {'data': traces, 'layout': layout}
