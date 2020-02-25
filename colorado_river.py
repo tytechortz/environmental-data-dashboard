@@ -121,6 +121,11 @@ def river_App():
                     ],
                         className='round1'
                     ),
+                    html.Div([
+                        html.Div(id='all-changes') 
+                    ],
+                        className='round1'
+                    ),
                 ],
                     className='three columns'
                 ),
@@ -131,6 +136,7 @@ def river_App():
             html.Div(id='current-volume', style={'display': 'none'}),
             html.Div(id='site', style={'display': 'none'}),
             html.Div(id='cvd', style={'display': 'none'}),
+            html.Div(id='last_v', style={'display': 'none'}),
         ]
     )
 
