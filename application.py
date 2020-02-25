@@ -140,13 +140,12 @@ def produce_changes(lake, period, cv, last_v, data):
     if lake == 'combo':
         df = df.set_index('Date')
         data = df.sort_index()
-        print(data)
         current_volume = data.iloc[-1,6]
         # current_volume = data['Value'][0]
-        print(current_volume)
+        # print(current_volume)
         past_data = data.iloc[-(int(period)),6]
         # past_data = data['Value'][1]
-        print(past_data)
+        # print(past_data)
         change = current_volume - past_data
         annual_min = data.resample('Y').min()
         # print(annual_min)
@@ -169,7 +168,7 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        print(data)
+        # print(data)
         current_volume = data.iloc[-2,3]
         # current_volume = cv
         # print(current_volume)
@@ -281,11 +280,7 @@ def clean_data(lake):
 
 
         start_date = date(1963, 6, 29)
-        print(start_date)
-        print(type(start_date))
-        print(type(today))
         date_now = date.today()
-        # today = time.strftime("%Y-%m-%d")
         delta = date_now - start_date
         days = delta.days
         df_mead_water = df_mead_water[:days]
