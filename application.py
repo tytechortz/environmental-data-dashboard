@@ -111,10 +111,12 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
+        print(data)
         # current_volume = data.iloc[-2,3]
-        current_volume = data['Value'][-1]
-        current_volume_date = data.index[-1]
+        current_volume = data.iloc[1, 7]
+        current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
+        print(cvd)
 
         return current_volume, site, cvd
 
@@ -131,24 +133,33 @@ def get_current_volume(lake, data):
 #         df['Date'] = pd.to_datetime(df['Date'])
 #         df = df.set_index('Date')
 #         data = df.sort_index()
-#         # print(data)
+#         print(data)
 #         current_volume = data.iloc[-2,3]
-#         # print(current_volume)
+#         print(current_volume)
 #         past_data = data.iloc[-(int(period)),3]
 #         # print(past_data)
+#         change = current_volume - past_data
+#         annual_min = data.resample('Y').min()
+#         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+#         rec_low = annual_min_twok['Value'].min()
+#         dif_rl = data.iloc[-2,3] - rec_low
 #     if lake == 'combo':
 #         df.index = pd.to_datetime(df.index)
 #         data = df.sort_index()
-#         # print(data)
-#         current_volume = data.iloc[-2,3]
-#         # print(current_volume)
-#         past_data = data.iloc[-(int(period)),3]
-
-#     change = current_volume - past_data
-#     annual_min = data.resample('Y').min()
-#     annual_min_twok = annual_min[(annual_min.index.year > 1999)]
-#     rec_low = annual_min_twok['Value'].min()
-#     dif_rl = data.iloc[-2,3] - rec_low
+#         print(data)
+#         current_volume = data.iloc[-1,6]
+#         print(current_volume)
+#         past_data = data.iloc[-(int(period)),6]
+#         change = current_volume - past_data
+#         annual_min = data.resample('Y').min()
+#         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+#         dif_rl = data.iloc[-1,6] - rec_low
+#     # rec_low = annual_min_twok['Value'].min()
+#     # change = current_volume - past_data
+#     # annual_min = data.resample('Y').min()
+#     # annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+#     # rec_low = annual_min_twok['Value'].min()
+#     # dif_rl = data.iloc[-2,3] - rec_low
  
 
 #     return html.Div([
