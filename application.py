@@ -279,7 +279,16 @@ def clean_data(lake):
             df_mead_water = df_mead_water[1:]
             df_mead_water.columns = new_mead_header
 
-        df_mead_water = df_mead_water[:20695]
+
+        start_date = date(1963, 6, 29)
+        print(start_date)
+        print(type(start_date))
+        print(type(today))
+        date_now = date.today()
+        # today = time.strftime("%Y-%m-%d")
+        delta = date_now - start_date
+        days = delta.days
+        df_mead_water = df_mead_water[:days]
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
     
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
