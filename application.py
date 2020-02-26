@@ -23,6 +23,7 @@ import requests
 
 
 today = time.strftime("%Y-%m-%d")
+print(today)
 
 app = dash.Dash()
 
@@ -1071,14 +1072,14 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
     all_data = pd.read_json(all_data)
     all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
     all_data.set_index(['Date'], inplace=True)
-    print(all_data)
+    # print(all_data)
     if g_l == '>=':
         df = all_data.loc[all_data[min_max]>=input_value]
     else:
         df = all_data.loc[all_data[min_max]<input_value]
     df_count = df.resample('Y').count()[min_max]
     df = pd.DataFrame({'DATE':df_count.index, 'Selected Days':df_count.values})
-    print(df)
+    # print(df)
     
     data = [
         go.Bar(
@@ -1420,6 +1421,8 @@ def update_heat_map(all_data, selected_value, normals, selected_product):
 def update_data(product):
 
     temperatures = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=' + ld + '&endDate=' + today + '&units=standard')
+
+    # https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate=2020-02-26&units=standard
 
     most_recent_data_date = last_day - timedelta(days=1)
     mrd = most_recent_data_date.strftime("%Y-%m-%d")
@@ -1898,7 +1901,7 @@ def update_current_stats(selected_sea, selected_product, df_fdta):
 def update_figure(selected_sea, selected_year, df_fdta):
     traces = []
     df_fdta = pd.read_json(df_fdta)
-    print(df_fdta)
+    # print(df_fdta)
     # selected_years = [selected_year1,selected_year2,selected_year3,selected_year4]
     for x in selected_year:
         sorted_daily_values=df_fdta[df_fdta.index.year == x]

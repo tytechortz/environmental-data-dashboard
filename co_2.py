@@ -33,9 +33,9 @@ frames = [old_data, new_data]
 co2_data = pd.concat(frames)
 co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
 max_co2 = co2_data['value'].max()
-print(max_co2)
+# print(max_co2)
 max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
-print(max_co2_date)
+# print(max_co2_date)
 current_co2 = co2_data['value'].iloc[-1]
 current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
 
@@ -98,6 +98,17 @@ def co2_App():
                 html.Div([
                     html.Div([
                         html.Div('Maximum CO2 Value (ppm)', style={'text-align':'center'}) 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('{}'.format(max_co2), style={'text-align':'center'}),
+                        html.Div('{}'.format(max_co2_date), style={'text-align':'center'}) 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
                     ],
                         className='round1'
                     ),
