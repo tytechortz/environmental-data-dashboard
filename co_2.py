@@ -41,7 +41,11 @@ current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
 
 fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'], mode='markers')])
 
-
+monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
+current_year = datetime.now().year
+current_month = datetime.now().month
+this_month_avg = monthly_avg.loc[current_year, current_month].value
+last_year_avg = monthly_avg.loc[current_year-1, current_month].value
 
 # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
 #     print(data)
@@ -115,6 +119,14 @@ def co2_App():
                     html.Div([
                         html.Div('{}'.format(current_co2), style={'text-align':'center'}),
                         html.Div('{}'.format(current_co2_date), style={'text-align':'center'}) 
+                    ],
+                        className='round1'
+                    ),
+                    html.Div([
+                        html.Div('Avg For Month (ppm)', style={'text-align':'center'}),
+                        html.Div('{:.2f}'.format(this_month_avg), style={'text-align':'center'}), 
+                        html.Div('Last Year', style={'text-align':'center'}),
+                        html.Div('{:.2f}'.format(last_year_avg), style={'text-align':'center'}), 
                     ],
                         className='round1'
                     ),

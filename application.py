@@ -352,10 +352,10 @@ def lake_graph(lake, data):
 @app.callback(Output('all-data', 'children'),
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
-  
     cleaned_all_temps = df_all_temps
+    print(cleaned_all_temps)
     cleaned_all_temps.columns=['dow','sta','Date','TMAX','TMIN']
-    # cleaned_all_temps['Date'] = pd.to_datetime(cleaned_all_temps['Date'])
+    
     cleaned_all_temps = cleaned_all_temps.drop(['dow','sta'], axis=1)
 
     return cleaned_all_temps.to_json()
@@ -731,12 +731,17 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
    
     df_record_highs_ly = pd.read_json(rec_highs)
     df_record_highs_ly = df_record_highs_ly.set_index(1)
+    print(df_record_highs_ly)
     df_record_lows_ly = pd.read_json(rec_lows)
     df_record_lows_ly = df_record_lows_ly.set_index(1)
     df_rl_cy = df_record_lows_ly[:len(temps_cy.index)]
     df_rh_cy = df_record_highs_ly[:len(temps_cy.index)]
 
+    print(df_rl_cy)
+    print(df_rh_cy)
+
     df_norms = pd.read_json(norms)
+    print(df_norms)
     if int(the_selected_year) % 4 == 0:
         df_norms = df_norms
     else:
@@ -1007,6 +1012,7 @@ def rec_high_temps(selected_year):
         rec_highs = df_rec_highs
     else:
         rec_highs = df_rec_highs.drop(df_rec_highs.index[59])
+    print(rec_highs)
     return rec_highs.to_json()
 
 @app.callback(Output('rec-lows', 'children'),
@@ -1271,6 +1277,7 @@ def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
     Input('product', 'value')])
 def clean_df5(all_data, product_value):
     dr = pd.read_json(all_data)
+    print(dr)
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
    
     df_date_index = df_all_temps.set_index(['Date'])
