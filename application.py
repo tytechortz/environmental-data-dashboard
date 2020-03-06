@@ -23,7 +23,6 @@ import requests
 
 
 today = time.strftime("%Y-%m-%d")
-print(today)
 
 app = dash.Dash()
 
