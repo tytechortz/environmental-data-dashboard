@@ -33,9 +33,7 @@ frames = [old_data, new_data]
 co2_data = pd.concat(frames)
 co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
 max_co2 = co2_data['value'].max()
-# print(max_co2)
 max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
-# print(max_co2_date)
 current_co2 = co2_data['value'].iloc[-1]
 current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
 
@@ -47,8 +45,6 @@ current_month = datetime.now().month
 this_month_avg = monthly_avg.loc[current_year, current_month].value
 last_year_avg = monthly_avg.loc[current_year-1, current_month].value
 
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#     print(data)
 
 def co2_App():
     return html.Div(
