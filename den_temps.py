@@ -16,7 +16,6 @@ startyr = 1950
 year_count = current_year-startyr
 
 df_all_temps = pd.DataFrame(all_temps,columns=['dow','sta','Date','TMAX','TMIN'])
-print(df_all_temps)
 
 # df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate=2020-02-26&units=standard')
 
@@ -24,14 +23,6 @@ last_day = df_all_temps.iloc[-1, 2] + timedelta(days=1)
 ld = last_day.strftime("%Y-%m-%d")
 
 df_norms = pd.DataFrame(norm_records)
-
-
-
-# print(df_all_temps)
-# df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
-# df_all_temps = df_all_temps.set_index('DATE')
-
-# print(df_all_temps)
 
 df_rec_lows = pd.DataFrame(rec_lows)
 
