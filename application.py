@@ -23,6 +23,7 @@ import requests
 
 
 today = time.strftime("%Y-%m-%d")
+yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 
 app = dash.Dash()
 
@@ -72,8 +73,9 @@ def co2_graph(co2_data):
 @app.callback(
     Output('max-co2-layout', 'children'),
     [Input('CO2-data', 'children')])
-def co2_stats(co2_data):
+def max_co2_stats(co2_data):
     df = pd.read_json(co2_data)
+    print(df)
     max_co2 = df['value'].max()
     max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
 
@@ -91,7 +93,33 @@ def co2_stats(co2_data):
         ),
     ])
 
+@app.callback(
+    Output('current-co2-layout', 'children'),
+    [Input('CO2-data', 'children')])
+def current_co2_stats(co2_data):
+    df = pd.read_json(co2_data)
+    
+    
+    # current_co2 = df['value'].iloc[-1]
+    current_co2 = df.loc[yesterday]
+    # print(type(current_co2))
+    # print(current_co2)
+    current_co2_value = current_co2.iloc[0]['value']
+    current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
 
+    return html.Div([
+        html.Div([
+            html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+        html.Div([
+            html.Div('{}'.format(current_co2_value), style={'text-align':'center'}),
+            html.Div('{}'.format(current_co2_date), style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+    ])
 
 @app.callback(
     Output('CO2-data', 'children'),
@@ -129,7 +157,7 @@ def lake_graph(n):
     current_month = datetime.now().month
     this_month_avg = monthly_avg.loc[current_year, current_month].value
     last_year_avg = monthly_avg.loc[current_year-1, current_month].value
-    print(monthly_avg)
+    # print(monthly_avg)
 
     return co2_data.to_json()
     

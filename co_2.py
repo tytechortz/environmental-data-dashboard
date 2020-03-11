@@ -108,11 +108,12 @@ def co2_App():
                     #     className='round1'
                     # ),
                     html.Div(id='max-co2-layout'),
-                    html.Div([
-                        html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
-                    ],
-                        className='round1'
-                    ),
+                    html.Div(id='current-co2-layout'),
+                    # html.Div([
+                    #     html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
+                    # ],
+                    #     className='round1'
+                    # ),
                     # html.Div([
                     #     html.Div('{}'.format(current_co2), style={'text-align':'center'}),
                     #     html.Div('{}'.format(current_co2_date), style={'text-align':'center'}) 
@@ -141,8 +142,8 @@ def co2_App():
                 ),
             ]),
             html.Div(id='CO2-data', style={'display': 'none'}),
-            html.Div(id='max-co2', style={'display': 'none'}),
-            html.Div(id='max-co2-date', style={'display': 'none'}),
+            # html.Div(id='max-co2', style={'display': 'none'}),
+            # html.Div(id='max-co2-date', style={'display': 'none'}),
             # html.Div(id='monthly-avg', style={'display': 'none'}),
             # html.Div(id='this-month-avg', style={'display': 'none'}),
             # html.Div(id='last-year-avg', style={'display': 'none'}),
