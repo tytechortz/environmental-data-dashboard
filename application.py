@@ -8,7 +8,7 @@ from homepage import Homepage
 from den_temps import temp_App, df_all_temps, current_year, ld, df_norms, df_rec_lows, df_rec_highs, year_count, today, last_day
 from ice import ice_App, sea_options, df, year_options, value_range, month_options
 from colorado_river import river_App, capacities
-from co_2 import co2_App, co2_data
+from co_2 import co2_App
 import pandas as pd
 import numpy as np
 from numpy import arange,array,ones
@@ -69,11 +69,27 @@ def co2_graph(co2_data):
 
     return {'data': data, 'layout': layout}
 
-# @app.callback(
-#     Output('max-co2', 'children'),
-#     [Input('CO2-data', 'children')])
-# def co2_stats(co2_data):
-#     return print(co2_data)
+@app.callback(
+    Output('max-co2', 'children'),
+    [Input('CO2-data', 'children')])
+def co2_stats(co2_data):
+    df = pd.read_json(co2_data)
+    max_co2 = df['value'].max()
+    max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
+
+    return html.Div([
+        html.Div([
+            html.Div('Maximum CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+        html.Div([
+            html.Div('{}'.format(max_co2), style={'text-align':'center'}),
+            html.Div('{}'.format(max_co2_date), style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+    ])
 
 @app.callback(
     Output('CO2-data', 'children'),

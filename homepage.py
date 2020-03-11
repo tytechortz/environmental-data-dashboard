@@ -2,7 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from co_2 import max_co2, max_co2_date, current_co2, current_co2_date
+# from co_2 import max_co2, max_co2_date, current_co2, current_co2_date
 
 body = dbc.Container([
    html.Div([
@@ -73,9 +73,9 @@ body = dbc.Container([
          html.P(
             """ Data from Dr. Pieter Tans, NOAA/ESRL (www.esrl.noaa.gov/gmd/ccgg/trends/) and Dr. Ralph Keeling, Scripps Institution of Oceanography (scrippsco2.ucsd.edu/) """
          ),
-         html.H4('Record: {} ppm {}'.format(max_co2, max_co2_date)),
-         html.H4('Current: {} ppm {}'.format(current_co2, current_co2_date)),
-         dbc.Button("Open App", color="primary", href="/co2"),
+         # html.H4('Record: {} ppm {}'.format(max_co2, max_co2_date)),
+         # html.H4('Current: {} ppm {}'.format(current_co2, current_co2_date)),
+         # dbc.Button("Open App", color="primary", href="/co2"),
       ],
          className='six columns'
       ),
