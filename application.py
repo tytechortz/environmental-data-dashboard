@@ -70,7 +70,7 @@ def co2_graph(co2_data):
     return {'data': data, 'layout': layout}
 
 @app.callback(
-    Output('max-co2', 'children'),
+    Output('max-co2-layout', 'children'),
     [Input('CO2-data', 'children')])
 def co2_stats(co2_data):
     df = pd.read_json(co2_data)
@@ -90,6 +90,8 @@ def co2_stats(co2_data):
             className='round1'
         ),
     ])
+
+
 
 @app.callback(
     Output('CO2-data', 'children'),
