@@ -37,7 +37,7 @@ max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
 current_co2 = co2_data['value'].iloc[-1]
 current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
 
-fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'], mode='markers')])
+# fig = go.Figure(data=[go.Scatter(x=co2_data.index, y=co2_data['value'], mode='markers')])
 
 monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
 current_year = datetime.now().year
@@ -90,7 +90,7 @@ def co2_App():
                 html.Div([
                     dcc.Graph(
                         id='co2-levels',
-                        figure=fig
+                        # figure=fig
                     ),
                 ],
                     className='nine columns'
@@ -140,6 +140,9 @@ def co2_App():
                 ),
             ]),
             html.Div(id='CO2-data', style={'display': 'none'}),
+            # html.Div(id='monthly-avg', style={'display': 'none'}),
+            # html.Div(id='this-month-avg', style={'display': 'none'}),
+            # html.Div(id='last-year-avg', style={'display': 'none'}),
         ]
     )
 

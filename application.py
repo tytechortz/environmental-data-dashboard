@@ -51,6 +51,31 @@ def display_page(pathname):
 # CO2 callbacks
 
 @app.callback(
+    Output('co2-levels', 'figure'),
+    [Input('CO2-data', 'children')])
+def co2_graph(co2_data):
+    df = pd.read_json(co2_data)
+
+    data = [
+        go.Scatter(
+            y = df['value'],
+            x = df.index,
+            mode = 'markers'
+        )
+    ]
+    layout = go.Layout(
+        height=500
+    )
+
+    return {'data': data, 'layout': layout}
+
+# @app.callback(
+#     Output('max-co2', 'children'),
+#     [Input('CO2-data', 'children')])
+# def co2_stats(co2_data):
+#     return print(co2_data)
+
+@app.callback(
     Output('CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
 def lake_graph(n):
@@ -71,7 +96,7 @@ def lake_graph(n):
     new_data['value'] = new_data['day']
     new_data = new_data.drop(['day'], axis=1)
     new_data = new_data[datetime(2019, 1, 1):]
-    print(new_data)
+   
     frames = [old_data, new_data]
     co2_data = pd.concat(frames)
     co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
@@ -80,6 +105,13 @@ def lake_graph(n):
     current_co2 = co2_data['value'].iloc[-1]
     current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
     print(co2_data)
+
+    monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    this_month_avg = monthly_avg.loc[current_year, current_month].value
+    last_year_avg = monthly_avg.loc[current_year-1, current_month].value
+    print(monthly_avg)
 
     return co2_data.to_json()
     
@@ -757,17 +789,15 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
    
     df_record_highs_ly = pd.read_json(rec_highs)
     df_record_highs_ly = df_record_highs_ly.set_index(1)
-    print(df_record_highs_ly)
+   
     df_record_lows_ly = pd.read_json(rec_lows)
     df_record_lows_ly = df_record_lows_ly.set_index(1)
     df_rl_cy = df_record_lows_ly[:len(temps_cy.index)]
     df_rh_cy = df_record_highs_ly[:len(temps_cy.index)]
 
-    print(df_rl_cy)
-    print(df_rh_cy)
-
+    
     df_norms = pd.read_json(norms)
-    print(df_norms)
+    
     if int(the_selected_year) % 4 == 0:
         df_norms = df_norms
     else:
