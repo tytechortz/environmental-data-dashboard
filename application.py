@@ -54,7 +54,16 @@ def display_page(pathname):
     Output('new-CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
 def lake_graph(n):
-    return print(data)
+    new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
+    new_data['Date'] = pd.to_datetime(new_data['Date'])
+    new_data.index = new_data['Date']
+    new_data = new_data.drop(['month', 'week', 'Date'], axis=1)
+
+    new_data['value'] = new_data['day']
+    new_data = new_data.drop(['day'], axis=1)
+    new_data = new_data[datetime(2019, 1, 1):]
+    print(new_data)
+    return new_data.to_json()
     
 
 
