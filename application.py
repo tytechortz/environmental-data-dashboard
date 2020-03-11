@@ -51,9 +51,18 @@ def display_page(pathname):
 # CO2 callbacks
 
 @app.callback(
-    Output('new-CO2-data', 'children'),
+    Output('CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
 def lake_graph(n):
+    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[146])
+
+    old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
+
+    old_data = old_data.iloc[501:]
+
+    old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
+    old_data = old_data.drop(['year', 'month', 'day'], axis=1)
+
     new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
     new_data['Date'] = pd.to_datetime(new_data['Date'])
     new_data.index = new_data['Date']
@@ -63,7 +72,16 @@ def lake_graph(n):
     new_data = new_data.drop(['day'], axis=1)
     new_data = new_data[datetime(2019, 1, 1):]
     print(new_data)
-    return new_data.to_json()
+    frames = [old_data, new_data]
+    co2_data = pd.concat(frames)
+    co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
+    max_co2 = co2_data['value'].max()
+    max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
+    current_co2 = co2_data['value'].iloc[-1]
+    current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
+    print(co2_data)
+
+    return co2_data.to_json()
     
 
 

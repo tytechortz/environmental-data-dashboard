@@ -139,7 +139,7 @@ def co2_App():
                     n_intervals=0
                 ),
             ]),
-            html.Div(id='new-CO2-data', style={'display': 'none'}),
+            html.Div(id='CO2-data', style={'display': 'none'}),
         ]
     )
 
