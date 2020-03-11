@@ -50,11 +50,11 @@ def display_page(pathname):
 
 # CO2 callbacks
 
-# @app.callback(
-#     Output('co2-levels', 'figure'),
-#     [Input('co2-data', 'children')])
-# def lake_graph(data):
-#     return print(data)
+@app.callback(
+    Output('new-CO2-data', 'children'),
+    [Input('interval-component', 'n_intervals')])
+def lake_graph(n):
+    return print(data)
     
 
 

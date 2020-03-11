@@ -132,7 +132,14 @@ def co2_App():
             ],
                 className='row'
             ),
-            # html.Div(id='co2-data', style={'display': 'none'}),
+            html.Div([
+                dcc.Interval(
+                    id='interval-component',
+                    interval=3600000,
+                    n_intervals=0
+                ),
+            ]),
+            html.Div(id='new-CO2-data', style={'display': 'none'}),
         ]
     )
 
