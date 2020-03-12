@@ -119,12 +119,7 @@ def max_co2_stats(co2_data):
     [Input('CO2-data', 'children')])
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
-    
-    
-    # current_co2 = df['value'].iloc[-1]
     current_co2 = df.loc[yesterday]
-    # print(type(current_co2))
-    # print(current_co2)
     current_co2_value = current_co2.iloc[0]['value']
     current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
 
@@ -171,15 +166,13 @@ def lake_graph(n):
     max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
     current_co2 = co2_data['value'].iloc[-1]
     current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
-    print(co2_data)
 
     monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
     current_year = datetime.now().year
     current_month = datetime.now().month
     this_month_avg = monthly_avg.loc[current_year, current_month].value
     last_year_avg = monthly_avg.loc[current_year-1, current_month].value
-    # print(monthly_avg)
-
+   
     return co2_data.to_json()
     
 
@@ -193,7 +186,6 @@ def lake_graph(n):
     Input('current-volume', 'children'),
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
-    # print(data)
     if lake == 'lakepowell' or lake == 'hdmlc':
         fill_pct = data / capacities[site]
         date = date[0:11]
@@ -229,7 +221,7 @@ def get_current_volume(lake, data):
         data.set_index(['Date'], inplace=True)
         data = data.sort_index()
         site = data.iloc[-2, 0]
-        # print(site)
+      
         current_volume = data.iloc[-2,3]
         current_volume_date = data.index[-2]
         cvd = str(current_volume_date)
@@ -239,13 +231,11 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
-        # print(data)
-        # current_volume = data.iloc[-2,3]
+       
         current_volume = data.iloc[0, 7]
         current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
         last_v = data.iloc[2, 7]
-        # print(cvd)
 
         return current_volume, site, last_v, cvd
 
@@ -259,22 +249,17 @@ def get_current_volume(lake, data):
     Input('selected-water-data', 'children')])
 def produce_changes(lake, period, cv, last_v, data):
     df = pd.read_json(data)
-    # print(last_v)
-    # print(cv)
-    # change = cv - last_v
-    # print(change)
+  
     if lake == 'combo':
         df = df.set_index('Date')
         data = df.sort_index()
         current_volume = data.iloc[-1,6]
-        # current_volume = data['Value'][0]
-        # print(current_volume)
+       
         past_data = data.iloc[-(int(period)),6]
-        # past_data = data['Value'][1]
-        # print(past_data)
+       
         change = current_volume - past_data
         annual_min = data.resample('Y').min()
-        # print(annual_min)
+      
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
         dif_rl = data.iloc[-1,6] - rec_low
@@ -294,16 +279,14 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        # print(data)
+       
         current_volume = data.iloc[-2,3]
-        # current_volume = cv
-        # print(current_volume)
+       
         past_data = data.iloc[-(int(period)),3]
-        # past_data = last_v
-        # print(past_data)
+        
         change = current_volume - past_data
         annual_min = data.resample('Y').min()
-        # print(annual_min)
+      
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
         dif_rl = data.iloc[-2,3] - rec_low
@@ -343,12 +326,11 @@ def clean_data(lake):
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
-            # print(df_water)
+           
             df_water['power level'] = 6124000
-        # print(df_water)
-        # chopped_df = df_water[df_water['Value'] != 0]
+       
         chopped_df = df_water.drop(df_water.index[0])
-        # print(chopped_df)
+        
         return chopped_df.to_json()
             
 
@@ -365,7 +347,7 @@ def clean_data(lake):
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
-            # print(df_water)
+        
             df_water['1090'] = 10857000
             df_water['1075'] = 9601000
             df_water['1050'] = 7683000
@@ -374,10 +356,10 @@ def clean_data(lake):
             # df['1035'] = 6638000
             # df['1030'] = 6305000
             df_water['1025'] = 5981000
-        # print(df_water)
+        
         # chopped_df = df_water[df_water['Value'] != 0]
         chopped_df = df_water.drop(df_water.index[0])
-        # print(chopped_df)
+      
         return chopped_df.to_json()
 
     elif lake == 'combo':
@@ -418,7 +400,7 @@ def clean_data(lake):
         df_total['Value_x'] = df_total['Value_x'].astype(int)
         df_total['Value_y'] = df_total['Value_y'].astype(int)
         df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
-        # print(df_total)
+      
         # chopped_df = df_total[df_total['Value'] != 0]
         chopped_df = df_total.drop(df_total.index[0])
         return chopped_df.to_json()
@@ -428,12 +410,11 @@ def clean_data(lake):
     [Input('lake', 'value'),
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
-    # print(lake)
     df = pd.read_json(data)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
     data = df.sort_index()
-    # print(df)
+
     traces = []
     if lake == 'hdmlc':
         title = df['Site'][0]
