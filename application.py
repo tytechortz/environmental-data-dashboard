@@ -75,7 +75,6 @@ def co2_graph(co2_data):
     [Input('CO2-data', 'children')])
 def max_co2_stats(co2_data):
     df = pd.read_json(co2_data)
-    print(df)
     max_co2 = df['value'].max()
     max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
 
@@ -88,6 +87,28 @@ def max_co2_stats(co2_data):
         html.Div([
             html.Div('{}'.format(max_co2), style={'text-align':'center'}),
             html.Div('{}'.format(max_co2_date), style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+    ])
+
+@app.callback(
+    Output('avg-co2-layout', 'children'),
+    [Input('CO2-data', 'children')])
+def max_co2_stats(co2_data):
+    df = pd.read_json(co2_data)
+    monthly_avg = df.groupby([df.index.year, df.index.month]).mean()
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    this_month_avg = monthly_avg.loc[current_year, current_month].value
+    last_year_avg = monthly_avg.loc[current_year-1, current_month].value
+
+    return html.Div([
+        html.Div([
+            html.Div('Avg For Month (ppm)', style={'text-align':'center'}),
+            html.Div('{:.2f}'.format(this_month_avg), style={'text-align':'center'}), 
+            html.Div('Last Year', style={'text-align':'center'}),
+            html.Div('{:.2f}'.format(last_year_avg), style={'text-align':'center'}), 
         ],
             className='round1'
         ),

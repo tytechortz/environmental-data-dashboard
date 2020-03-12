@@ -109,6 +109,7 @@ def co2_App():
                     # ),
                     html.Div(id='max-co2-layout'),
                     html.Div(id='current-co2-layout'),
+                    html.Div(id='avg-co2-layout'),
                     # html.Div([
                     #     html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
                     # ],
