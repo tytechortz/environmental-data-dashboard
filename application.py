@@ -24,6 +24,7 @@ import requests
 
 today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 
 app = dash.Dash()
 
@@ -119,7 +120,12 @@ def max_co2_stats(co2_data):
     [Input('CO2-data', 'children')])
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
+    # print(df)
     current_co2 = df.loc[yesterday]
+    print(current_co2)
+    if current_co2.empty:
+        current_co2 = df.loc[two_days_ago]
+    print(current_co2)   
     current_co2_value = current_co2.iloc[0]['value']
     current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
 
@@ -166,7 +172,7 @@ def lake_graph(n):
     max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
     current_co2 = co2_data['value'].iloc[-1]
     current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
-
+    print(co2_data)
     monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
     current_year = datetime.now().year
     current_month = datetime.now().month
@@ -306,11 +312,14 @@ def produce_changes(lake, period, cv, last_v, data):
 
 @app.callback(
     Output('selected-water-data', 'children'),
-    [Input('lake', 'value')])
-def clean_data(lake):
+    [Input('lake', 'value'),
+    Input('interval-component', 'n_intervals')])
+def clean_data(lake, n):
     powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+
+    
 
     if lake == 'lakepowell':
 
@@ -330,7 +339,7 @@ def clean_data(lake):
             df_water['power level'] = 6124000
        
         chopped_df = df_water.drop(df_water.index[0])
-        
+        print(chopped_df)
         return chopped_df.to_json()
             
 
