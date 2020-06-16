@@ -15,7 +15,7 @@ app.config['suppress_callback_exceptions']=True
 capacities = {'LAKE POWELL': 24322000, 'Lake Mead': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
 
 today = time.strftime("%Y-%m-%d")
-print(today)
+# print(today)
 
 # url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
 
@@ -137,13 +137,13 @@ def river_App():
             html.Div(id='site', style={'display': 'none'}),
             html.Div(id='cvd', style={'display': 'none'}),
             html.Div(id='last_v', style={'display': 'none'}),
-            html.Div([
-                dcc.Interval(
-                    id='interval-component',
-                    interval=10000,
-                    n_intervals=0
-                ),
-            ]),
+            # html.Div([
+            #     dcc.Interval(
+            #         id='interval-component',
+            #         interval=1000,
+            #         n_intervals=0
+            #     ),
+            # ]),
         ]
     )
 

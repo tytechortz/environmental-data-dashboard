@@ -20,8 +20,10 @@ import time
 import csv 
 import requests
 
-
-
+pd.set_option('display.max_rows', None)
+# print(df_rec_highs)
+pd.set_option('display.max_rows', None)
+# print(df_all_temps)
 today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
@@ -50,12 +52,13 @@ def display_page(pathname):
         return Homepage()
 
 
-# CO2 callbacks
+# CO2 callbacks ########################################
 
 @app.callback(
     Output('co2-levels', 'figure'),
-    [Input('CO2-data', 'children')])
-def co2_graph(co2_data):
+    [Input('CO2-data', 'children'),
+    Input('interval-component', 'n_intervals')])
+def co2_graph(co2_data, n):
     df = pd.read_json(co2_data)
 
     data = [
@@ -73,8 +76,9 @@ def co2_graph(co2_data):
 
 @app.callback(
     Output('max-co2-layout', 'children'),
-    [Input('CO2-data', 'children')])
-def max_co2_stats(co2_data):
+    [Input('CO2-data', 'children'),
+    Input('interval-component', 'n_intervals')])
+def max_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
     max_co2 = df['value'].max()
     max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
@@ -95,8 +99,9 @@ def max_co2_stats(co2_data):
 
 @app.callback(
     Output('avg-co2-layout', 'children'),
-    [Input('CO2-data', 'children')])
-def max_co2_stats(co2_data):
+    [Input('CO2-data', 'children'),
+    Input('interval-component', 'n_intervals')])
+def avg_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
     monthly_avg = df.groupby([df.index.year, df.index.month]).mean()
     current_year = datetime.now().year
@@ -122,10 +127,10 @@ def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
     # print(df)
     current_co2 = df.loc[yesterday]
-    print(current_co2)
+    # print(current_co2)
     if current_co2.empty:
         current_co2 = df.loc[two_days_ago]
-    print(current_co2)   
+    # print(current_co2)   
     current_co2_value = current_co2.iloc[0]['value']
     current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
 
@@ -147,14 +152,17 @@ def current_co2_stats(co2_data):
     Output('CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
 def lake_graph(n):
-    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[146])
+    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[149])
 
     old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
+
+    # print(old_data)
 
     old_data = old_data.iloc[501:]
 
     old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
     old_data = old_data.drop(['year', 'month', 'day'], axis=1)
+    # print(old_data)
 
     new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
     new_data['Date'] = pd.to_datetime(new_data['Date'])
@@ -163,17 +171,24 @@ def lake_graph(n):
 
     new_data['value'] = new_data['day']
     new_data = new_data.drop(['day'], axis=1)
-    new_data = new_data[datetime(2019, 1, 1):]
+    new_data = new_data[datetime(2020, 1, 1):]
+    # print(new_data)
    
     frames = [old_data, new_data]
     co2_data = pd.concat(frames)
     co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
+    # print(co2_data)
     max_co2 = co2_data['value'].max()
+    # print(max_co2)
     max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
+    # print(max_co2_date)
     current_co2 = co2_data['value'].iloc[-1]
+    # print(current_co2)
     current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
-    print(co2_data)
-    monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
+    # print(current_co2_date)
+    # monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
+    monthly_avg = co2_data.groupby([co2_data.index.year, co2_data.index.month]).mean()
+
     current_year = datetime.now().year
     current_month = datetime.now().month
     this_month_avg = monthly_avg.loc[current_year, current_month].value
@@ -183,7 +198,7 @@ def lake_graph(n):
     
 
 
-# Colorado River storage callbacks
+# Colorado River storage callbacks ###########################
 
 @app.callback(
     Output('water-stats', 'children'),
@@ -192,6 +207,9 @@ def lake_graph(n):
     Input('current-volume', 'children'),
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
+    print(site)
+    print(data)
+    print(lake)
     if lake == 'lakepowell' or lake == 'hdmlc':
         fill_pct = data / capacities[site]
         date = date[0:11]
@@ -227,6 +245,7 @@ def get_current_volume(lake, data):
         data.set_index(['Date'], inplace=True)
         data = data.sort_index()
         site = data.iloc[-2, 0]
+        print(site)
       
         current_volume = data.iloc[-2,3]
         current_volume_date = data.index[-2]
@@ -462,13 +481,13 @@ def lake_graph(lake, data):
     return {'data': traces, 'layout': layout}
 
 
-# Temperature callbacks
+# Temperature callbacks ################################
 
 @app.callback(Output('all-data', 'children'),
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
     cleaned_all_temps = df_all_temps
-    print(cleaned_all_temps)
+    print(cleaned_all_temps.tail())
     cleaned_all_temps.columns=['dow','sta','Date','TMAX','TMIN']
     
     cleaned_all_temps = cleaned_all_temps.drop(['dow','sta'], axis=1)
