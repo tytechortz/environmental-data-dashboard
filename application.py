@@ -125,15 +125,20 @@ def avg_co2_stats(co2_data, n):
     [Input('CO2-data', 'children')])
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
-    # print(df)
+    # df.set_index(df.iloc[0].values)
+    print(df)
     current_co2 = df.loc[yesterday]
     # print(current_co2)
     if current_co2.empty:
         current_co2 = df.loc[two_days_ago]
-    # print(current_co2)   
-    current_co2_value = current_co2.iloc[0]['value']
-    current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
-
+    print(current_co2)   
+    print(type(current_co2))
+    print(current_co2.name)
+    # current_co2_value = current_co2.iloc[0]['value']
+    current_co2_value = current_co2.iloc[-1]
+    # current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
+    current_co2_date = current_co2.name.strftime('%Y-%m-%d')
+    print(current_co2_date)
     return html.Div([
         html.Div([
             html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
