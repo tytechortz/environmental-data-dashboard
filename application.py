@@ -126,19 +126,19 @@ def avg_co2_stats(co2_data, n):
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
     # df.set_index(df.iloc[0].values)
-    print(df)
+    # print(df)
     current_co2 = df.loc[yesterday]
     # print(current_co2)
     if current_co2.empty:
         current_co2 = df.loc[two_days_ago]
-    print(current_co2)   
-    print(type(current_co2))
-    print(current_co2.name)
+    # print(current_co2)   
+    # print(type(current_co2))
+    # print(current_co2.name)
     # current_co2_value = current_co2.iloc[0]['value']
     current_co2_value = current_co2.iloc[-1]
     # current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
     current_co2_date = current_co2.name.strftime('%Y-%m-%d')
-    print(current_co2_date)
+    # print(current_co2_date)
     return html.Div([
         html.Div([
             html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
@@ -244,7 +244,7 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-    
+        print(data)
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
@@ -336,14 +336,11 @@ def produce_changes(lake, period, cv, last_v, data):
 
 @app.callback(
     Output('selected-water-data', 'children'),
-    [Input('lake', 'value'),
-    Input('interval-component', 'n_intervals')])
-def clean_data(lake, n):
+    [Input('lake', 'value')])
+def clean_data(lake):
     powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
-
-    
 
     if lake == 'lakepowell':
 
@@ -363,7 +360,7 @@ def clean_data(lake, n):
             df_water['power level'] = 6124000
        
         chopped_df = df_water.drop(df_water.index[0])
-        print(chopped_df)
+
         return chopped_df.to_json()
             
 
@@ -492,7 +489,7 @@ def lake_graph(lake, data):
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
     cleaned_all_temps = df_all_temps
-    print(cleaned_all_temps.tail())
+    # print(cleaned_all_temps.tail())
     cleaned_all_temps.columns=['dow','sta','Date','TMAX','TMIN']
     
     cleaned_all_temps = cleaned_all_temps.drop(['dow','sta'], axis=1)
@@ -1149,7 +1146,7 @@ def rec_high_temps(selected_year):
         rec_highs = df_rec_highs
     else:
         rec_highs = df_rec_highs.drop(df_rec_highs.index[59])
-    print(rec_highs)
+    # print(rec_highs)
     return rec_highs.to_json()
 
 @app.callback(Output('rec-lows', 'children'),
@@ -1414,7 +1411,7 @@ def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
     Input('product', 'value')])
 def clean_df5(all_data, product_value):
     dr = pd.read_json(all_data)
-    print(dr)
+    # print(dr)
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
    
     df_date_index = df_all_temps.set_index(['Date'])
