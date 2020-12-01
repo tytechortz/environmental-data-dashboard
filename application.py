@@ -314,9 +314,12 @@ def produce_changes(lake, period, cv, last_v, data):
         df = df.set_index('Date')
         data = df.sort_index()
         print(data)
-        current_volume = data.iloc[-0,0]
+        # current_volume = data.iloc[-0,-0]
+        current_volume = data['Value'].iloc[-1]
+        print(current_volume)
        
         past_data = data.iloc[-(int(period)),0]
+        print(past_data)
         
         change = current_volume - past_data
         annual_min = data.resample('Y').min()
