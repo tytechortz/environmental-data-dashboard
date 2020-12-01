@@ -7,7 +7,7 @@ try:
     postgreSQL_pool = psycopg2.pool.SimpleConnectionPool(1, 20,user = "postgres",
                                                 password = "1234",
                                                 host = "localhost",
-                                                database = "denver_temps")
+                                                database = "postgres")
 
     if(postgreSQL_pool):
             print("Connection pool created successfully")
@@ -22,7 +22,7 @@ try:
     if(norms_connection):
         print("successfully recived connection from connection pool ")
         norms_cursor = norms_connection.cursor()
-        norms_cursor.execute("select * from dly_max_norm")
+        norms_cursor.execute("select * from denver_norms")
         norm_records = norms_cursor.fetchall()
         norms_cursor.close()
 

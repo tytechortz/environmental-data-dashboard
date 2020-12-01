@@ -212,9 +212,9 @@ def lake_graph(n):
     Input('current-volume', 'children'),
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
-    print(site)
-    print(data)
-    print(lake)
+    # print(site)
+    # print(data)
+    # print(lake)
     if lake == 'lakepowell' or lake == 'hdmlc':
         fill_pct = data / capacities[site]
         date = date[0:11]
@@ -244,13 +244,13 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        print(data)
+        # print(data)
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
         data = data.sort_index()
         site = data.iloc[-2, 0]
-        print(site)
+        # print(site)
       
         current_volume = data.iloc[-2,3]
         current_volume_date = data.index[-2]
@@ -338,20 +338,30 @@ def produce_changes(lake, period, cv, last_v, data):
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
-    powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+    # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
-    mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+    powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+
+    # print(powell_data)
+
+    # mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+
+    mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1850-01-01&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
 
     if lake == 'lakepowell':
 
         with requests.Session() as s:
             download = s.get(powell_data)
-
+           
             decoded_content = download.content.decode('utf-8')
-
+            # print(decoded_content)
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            # cr = csv.reader(decoded_content, delimeter=',')
 
-            for i in range(4): next(cr)
+
+            print(cr)
+
+            for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
@@ -372,7 +382,7 @@ def clean_data(lake):
 
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
 
-            for i in range(4): next(cr)
+            for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
@@ -389,7 +399,7 @@ def clean_data(lake):
         
         # chopped_df = df_water[df_water['Value'] != 0]
         chopped_df = df_water.drop(df_water.index[0])
-      
+        print(chopped_df)
         return chopped_df.to_json()
 
     elif lake == 'combo':
@@ -441,6 +451,9 @@ def clean_data(lake):
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
     df = pd.read_json(data)
+    # print(df)
+    df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
+    # print(df)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
     data = df.sort_index()
@@ -1112,7 +1125,7 @@ def all_temps(selected_year, period):
         connection = psycopg2.connect(user = "postgres",
                                     password = "1234",
                                     host = "localhost",
-                                    database = "denver_temps")
+                                    database = "postgres")
         cursor = connection.cursor()
 
         postgreSQL_select_year_Query = 'SELECT * FROM temps WHERE EXTRACT(year FROM "DATE"::TIMESTAMP) IN ({},{}) ORDER BY "DATE" ASC'.format(selected_year, previous_year)
@@ -1568,11 +1581,11 @@ def update_data(product):
     most_recent_data_date = last_day - timedelta(days=1)
     mrd = most_recent_data_date.strftime("%Y-%m-%d")
 
-    engine = create_engine('postgresql://postgres:1234@localhost:5432/denver_temps')
+    engine = create_engine('postgresql://postgres:1234@localhost:5432/postgres')
     temperatures.to_sql('temps', engine, if_exists='append')
 
 
-# Ice callbacks
+# Ice callbacks ################################################################
 
 @app.callback(
     Output('stats-n-stuff', 'children'),
@@ -1618,6 +1631,16 @@ def stats_n_stuff(product):
         ],
             className='twelve columns'
         ),
+    elif product == 'moving-avg':
+        return html.Div([
+            html.Div([
+                html.Div(id='moving-avg-stats')
+            ],
+                className='twelve columns'
+            ),
+        ],
+            className='twelve columns'
+        ),
 
 @app.callback(
     Output('stats', 'children'),
@@ -1646,6 +1669,8 @@ def display_stats(value):
         ],
             className='twelve columns'
         ),
+
+     
 
 @app.callback(
     Output('daily-rankings-graph', 'figure'),
@@ -1862,7 +1887,7 @@ def annual_ranking(selected_product):
     [Input('product', 'value')])
 def clean_fdta(selected_product):
     df_fdta = df.rolling(window=5).mean()
-    if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date':
+    if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date' or selected_product == 'moving-avg':
         return df_fdta.to_json()
 
 @app.callback(
@@ -2060,6 +2085,15 @@ def update_figure(selected_sea, selected_year, df_fdta):
                 hovermode='closest',
                 )  
     }
+
+@app.callback(
+    Output('moving-avg-graph', 'figure'),
+    [Input('product', 'value'),
+    Input('df-fdta', 'children')])
+def update_figure_c(selected_product, df_fdta):
+    df_fdta = pd.read_json(df_fdta)
+    
+
 
 @app.callback([
     Output('monthly-bar', 'figure'),

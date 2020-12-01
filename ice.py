@@ -99,7 +99,6 @@ keys = [str(i) for i in keys]
 dictionary_maker()
 
 
-
 m = 1
 d = 1
 
@@ -178,6 +177,7 @@ def ice_App():
                                 {'label':'Avg Monthy Extent', 'value':'monthly-bar'},
                                 {'label':'Extent On Current Date', 'value':'extent-date'},
                                 {'label':'Extent Rankings', 'value':'extent-stats'},
+                                {'label':'1 Year Moving Avg', 'value':'moving-avg'},
                             ],
                             # value='temp-graph',
                             labelStyle={'display': 'block'},
@@ -217,6 +217,22 @@ def ice_App():
             ],
                 className='row'
             ),
+            # html.Div([
+            #     html.Div([
+            #         html.Div(
+            #             id='moving-avg-graph'
+            #         ), 
+            #     ],
+            #         className='eight columns'
+            #     ),
+            #     html.Div([
+            #         html.Div(id='stats-n-stuff')
+            #     ],
+            #         className='four columns'
+            #     ), 
+            # ],
+            #     className='row'
+            # ),
             html.Div([
                 html.Div([
                     html.Div(
