@@ -363,11 +363,16 @@ def clean_data(lake):
 
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
+            df_water = df_water.drop(df_water.columns[[0,1,3,4,5,7,8]], axis=1)
+            print(df_water)
             new_header = df_water.iloc[0]
+            print(new_header)
             df_water = df_water[1:]
             df_water.columns = new_header
            
             df_water['power level'] = 6124000
+
+            # print(df_water)
        
         chopped_df = df_water.drop(df_water.index[0])
 
@@ -452,7 +457,7 @@ def clean_data(lake):
 def lake_graph(lake, data):
     df = pd.read_json(data)
     # print(df)
-    df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
+    # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
     # print(df)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
