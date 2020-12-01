@@ -108,7 +108,7 @@ def river_App():
                             options=[
                                 {'label':'D', 'value':'2'},
                                 {'label':'W', 'value':'8'},
-                                {'label':'M', 'value':'32'},
+                                {'label':'M', 'value':'31'},
                                 {'label':'Y', 'value':'367'},
                             ],
                             value='2',
