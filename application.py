@@ -244,19 +244,22 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        print(data)
+        # print(data)
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
+        # print(data)
         data = data.sort_index()
+        # print(data)
         site = data.iloc[-2, 0]
         # print(site)
       
         current_volume = data.iloc[-1,0]
-        print(current_volume)
+        # print(current_volume)
         current_volume_date = data.index[-2]
+        # print(current_volume_date)
         cvd = str(current_volume_date)
-        last_v = data.iloc[-3,3]
+        last_v = data.iloc[-1,0]
 
         return current_volume, site, last_v, cvd
     elif lake == 'combo':
@@ -310,17 +313,17 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
+        print(data)
+        current_volume = data.iloc[-0,0]
        
-        current_volume = data.iloc[-2,3]
-       
-        past_data = data.iloc[-(int(period)),3]
+        past_data = data.iloc[-(int(period)),0]
         
         change = current_volume - past_data
         annual_min = data.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        dif_rl = data.iloc[-2,3] - rec_low
+        dif_rl = data.iloc[-0,0] - rec_low
 
     
  
