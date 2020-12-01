@@ -474,7 +474,8 @@ def lake_graph(lake, data):
                 name = column
             ))
     elif lake == 'lakepowell':
-        title = df['Site'][0]
+        # title = df['Site'][0]
+        title = 'Lake Powell'
         traces.append(go.Scatter(
             y = df['Value'],
             x = df.index,
