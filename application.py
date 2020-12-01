@@ -364,11 +364,12 @@ def clean_data(lake):
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[0,1,3,4,5,7,8]], axis=1)
+            df_water.columns = ["Value", "Date"]
             print(df_water)
-            new_header = df_water.iloc[0]
-            print(new_header)
+            # new_header = df_water.iloc[0]
+            # print(new_header)
             df_water = df_water[1:]
-            df_water.columns = new_header
+            # df_water.columns = new_header
            
             df_water['power level'] = 6124000
 
