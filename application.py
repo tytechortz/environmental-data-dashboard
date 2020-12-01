@@ -244,7 +244,7 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        # print(data)
+        print(data)
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
@@ -252,7 +252,8 @@ def get_current_volume(lake, data):
         site = data.iloc[-2, 0]
         # print(site)
       
-        current_volume = data.iloc[-2,3]
+        current_volume = data.iloc[-1,0]
+        print(current_volume)
         current_volume_date = data.index[-2]
         cvd = str(current_volume_date)
         last_v = data.iloc[-3,3]
@@ -359,7 +360,7 @@ def clean_data(lake):
             # cr = csv.reader(decoded_content, delimeter=',')
 
 
-            print(cr)
+            # print(cr)
 
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
