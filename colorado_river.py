@@ -12,7 +12,7 @@ app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
 
-capacities = {'LAKE POWELL': 24322000, 'Lake Mead': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
+capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
 
 today = time.strftime("%Y-%m-%d")
 # print(today)
@@ -109,7 +109,7 @@ def river_App():
                                 {'label':'D', 'value':'2'},
                                 {'label':'W', 'value':'8'},
                                 {'label':'M', 'value':'31'},
-                                {'label':'Y', 'value':'367'},
+                                {'label':'Y', 'value':'366'},
                             ],
                             value='2',
                             labelStyle={'display': 'inline'},

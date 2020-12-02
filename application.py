@@ -213,8 +213,10 @@ def lake_graph(n):
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
     # print(site)
+    # print(type(data))
     # print(data)
     # print(lake)
+    # print(capacities[site])
     if lake == 'lakepowell' or lake == 'hdmlc':
         fill_pct = data / capacities[site]
         date = date[0:11]
@@ -251,8 +253,8 @@ def get_current_volume(lake, data):
         # print(data)
         data = data.sort_index()
         # print(data)
-        site = data.iloc[-2, 0]
-        # print(site)
+        site = data.iloc[-3, 0]
+        print(site)
       
         current_volume = data.iloc[-1,0]
         # print(current_volume)
@@ -313,15 +315,16 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        print(data)
-        # current_volume = data.iloc[-0,-0]
+        print(data.tail(10))
+        current_volume = data.iloc[-0,-0]
         current_volume = data['Value'].iloc[-1]
-        print(current_volume)
+        print(type(current_volume))
        
-        past_data = data.iloc[-(int(period)),0]
+        past_data = data.iloc[-(int(period)),1]
         print(past_data)
         
         change = current_volume - past_data
+        print(change)
         annual_min = data.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
@@ -370,9 +373,9 @@ def clean_data(lake):
 
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
-            df_water = df_water.drop(df_water.columns[[0,1,3,4,5,7,8]], axis=1)
-            df_water.columns = ["Value", "Date"]
-            print(df_water)
+            df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
+            df_water.columns = ["Site", "Value", "Date"]
+            # print(df_water)
             # new_header = df_water.iloc[0]
             # print(new_header)
             df_water = df_water[1:]
@@ -412,7 +415,7 @@ def clean_data(lake):
         
         # chopped_df = df_water[df_water['Value'] != 0]
         chopped_df = df_water.drop(df_water.index[0])
-        print(chopped_df)
+        # print(chopped_df)
         return chopped_df.to_json()
 
     elif lake == 'combo':
