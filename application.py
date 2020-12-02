@@ -329,7 +329,8 @@ def produce_changes(lake, period, cv, last_v, data):
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        dif_rl = data.iloc[-0,0] - rec_low
+        print(rec_low)
+        dif_rl = data.iloc[-0,1] - rec_low
 
     
  
