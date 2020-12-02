@@ -214,7 +214,7 @@ def lake_graph(n):
 def produce_stats(lake, site, data, date ):
     # print(site)
     # print(type(data))
-    # print(data)
+    print(date)
     # print(lake)
     # print(capacities[site])
     if lake == 'lakepowell' or lake == 'hdmlc':
@@ -246,19 +246,19 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        # print(data)
+        print(data.tail(10))
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
         # print(data)
         data = data.sort_index()
-        # print(data)
+        # print(data.tail(15))
         site = data.iloc[-3, 0]
-        print(site)
+        # print(site)
       
-        current_volume = data.iloc[-1,0]
+        current_volume = data.iloc[-1,1]
         # print(current_volume)
-        current_volume_date = data.index[-2]
+        current_volume_date = data.index[-1]
         # print(current_volume_date)
         cvd = str(current_volume_date)
         last_v = data.iloc[-1,0]
@@ -271,6 +271,7 @@ def get_current_volume(lake, data):
         current_volume = data.iloc[0, 7]
         current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
+        print(cvd)
         last_v = data.iloc[2, 7]
 
         return current_volume, site, last_v, cvd
@@ -315,21 +316,21 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        print(data.tail(10))
+        # print(data.tail(10))
         current_volume = data.iloc[-0,-0]
         current_volume = data['Value'].iloc[-1]
-        print(type(current_volume))
+        # print(type(current_volume))
        
         past_data = data.iloc[-(int(period)),1]
-        print(past_data)
+        # print(past_data)
         
         change = current_volume - past_data
-        print(change)
+        # print(change)
         annual_min = data.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        print(rec_low)
+        # print(rec_low)
         dif_rl = data.iloc[-0,1] - rec_low
 
     
@@ -387,6 +388,7 @@ def clean_data(lake):
             # print(df_water)
        
         chopped_df = df_water.drop(df_water.index[0])
+        print(chopped_df.tail(20))
 
         return chopped_df.to_json()
             
