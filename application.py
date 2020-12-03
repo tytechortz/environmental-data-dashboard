@@ -349,16 +349,13 @@ def produce_changes(lake, period, cv, last_v, data):
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
+    print(lake)
     # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
 
-    # print(powell_data)
-
     # mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
-
-    mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1850-01-01&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
-
+    mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1937-05-28&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
     if lake == 'lakepowell':
 
         with requests.Session() as s:
@@ -387,7 +384,7 @@ def clean_data(lake):
             # print(df_water)
        
         chopped_df = df_water.drop(df_water.index[0])
-        print(chopped_df.tail(20))
+        # print(chopped_df.tail(20))
 
         return chopped_df.to_json()
             
@@ -399,9 +396,11 @@ def clean_data(lake):
             decoded_content = download.content.decode('utf-8')
 
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-
+            print(cr)
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
+            df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
+            print(df_water)
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
