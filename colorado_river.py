@@ -12,7 +12,7 @@ app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
 
-capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
+capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead Hoover Dam and Powerplant': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
 
 today = time.strftime("%Y-%m-%d")
 # print(today)

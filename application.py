@@ -396,14 +396,14 @@ def clean_data(lake):
             decoded_content = download.content.decode('utf-8')
 
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            print(cr)
+            # print(cr)
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
-            print(df_water.tail(10))
-            new_header = df_water.iloc[0]
-            df_water = df_water[1:]
-            df_water.columns = new_header
+            # print(df_water.tail(10))
+            # new_header = df_water.iloc[0]
+            # df_water = df_water[1:]
+            df_water.columns = ["Site", "Value", "Date"]
         
             df_water['1090'] = 10857000
             df_water['1075'] = 9601000
@@ -427,33 +427,48 @@ def clean_data(lake):
 
             crp = csv.reader(p_decoded_content.splitlines(), delimiter=',')
 
-            for i in range(4): next(crp)
+            # for i in range(4): next(crp)
+            # df_powell_water = pd.DataFrame(crp)
+            # new_powell_header = df_powell_water.iloc[0]
+            # df_powell_water = df_powell_water[1:]
+            # df_powell_water.columns = new_powell_header
+
+            for i in range(9): next(crp)
             df_powell_water = pd.DataFrame(crp)
-            new_powell_header = df_powell_water.iloc[0]
-            df_powell_water = df_powell_water[1:]
-            df_powell_water.columns = new_powell_header
+            df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5,7,8]], axis=1)
+            df_powell_water.columns = ["Site", "Value", "Date"]
 
         with requests.Session() as t:
             m_download = t.get(mead_data)
             m_decoded_content = m_download.content.decode('utf-8')
             crm = csv.reader(m_decoded_content.splitlines(), delimiter=',')
-            for i in range(4): next(crm)
+            for i in range(9): next(crm)
             df_mead_water = pd.DataFrame(crm)
-            new_mead_header = df_mead_water.iloc[0]
-            df_mead_water = df_mead_water[1:]
-            df_mead_water.columns = new_mead_header
+            df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5,7,8]], axis=1)
+            # print(df_water.tail(10))
+            # new_header = df_water.iloc[0]
+            # df_water = df_water[1:]
+            df_mead_water.columns = ["Site", "Value", "Date"]
+            # for i in range(4): next(crm)
+            # df_mead_water = pd.DataFrame(crm)
+            # new_mead_header = df_mead_water.iloc[0]
+            # df_mead_water = df_mead_water[1:]
+            # df_mead_water.columns = new_mead_header
 
-
+        print(df_powell_water.tail(10))
+        print(df_mead_water.tail(10))
         start_date = date(1963, 6, 29)
         date_now = date.today()
         delta = date_now - start_date
         days = delta.days
         df_mead_water = df_mead_water[:days]
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
+        print(df_total.tail(10))
     
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
+        print(df_total.tail(10))
      
-        df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
+        # df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         df_total['Value_x'] = df_total['Value_x'].astype(int)
         df_total['Value_y'] = df_total['Value_y'].astype(int)
         df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
@@ -477,8 +492,8 @@ def lake_graph(lake, data):
 
     traces = []
     if lake == 'hdmlc':
-        title = df['Site'][0]
-        for column in data.columns[3:]:
+        title = 'Lake Mead'
+        for column in data.columns[1:]:
             traces.append(go.Scatter(
                 y = df[column],
                 x = df.index,
