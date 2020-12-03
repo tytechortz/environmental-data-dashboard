@@ -400,7 +400,7 @@ def clean_data(lake):
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
-            print(df_water)
+            print(df_water.tail(10))
             new_header = df_water.iloc[0]
             df_water = df_water[1:]
             df_water.columns = new_header
