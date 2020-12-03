@@ -316,7 +316,7 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        # print(data.tail(10))
+        print(data.tail(10))
         current_volume = data.iloc[-0,-0]
         current_volume = data['Value'].iloc[-1]
         # print(type(current_volume))
@@ -330,8 +330,7 @@ def produce_changes(lake, period, cv, last_v, data):
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        # print(rec_low)
-        dif_rl = data.iloc[-0,1] - rec_low
+        dif_rl = data['Value'].iloc[-1] - rec_low
 
     
  
