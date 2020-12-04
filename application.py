@@ -246,7 +246,7 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        print(data.tail(10))
+        # print(data.tail(10))
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
@@ -267,7 +267,7 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
-       
+        # print(dsata)
         current_volume = data.iloc[0, 7]
         current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
@@ -290,6 +290,7 @@ def produce_changes(lake, period, cv, last_v, data):
     if lake == 'combo':
         df = df.set_index('Date')
         data = df.sort_index()
+        # print(data.tail(20))
         current_volume = data.iloc[-1,6]
        
         past_data = data.iloc[-(int(period)),6]
@@ -316,7 +317,7 @@ def produce_changes(lake, period, cv, last_v, data):
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         data = df.sort_index()
-        print(data.tail(10))
+        # print(data.tail(10))
         current_volume = data.iloc[-0,-0]
         current_volume = data['Value'].iloc[-1]
         # print(type(current_volume))
@@ -437,7 +438,7 @@ def clean_data(lake):
             df_powell_water = pd.DataFrame(crp)
             df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5,7,8]], axis=1)
             df_powell_water.columns = ["Site", "Value", "Date"]
-
+            # print(df_powell_water)
         with requests.Session() as t:
             m_download = t.get(mead_data)
             m_decoded_content = m_download.content.decode('utf-8')
@@ -445,28 +446,31 @@ def clean_data(lake):
             for i in range(9): next(crm)
             df_mead_water = pd.DataFrame(crm)
             df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5,7,8]], axis=1)
-            # print(df_water.tail(10))
+            
             # new_header = df_water.iloc[0]
             # df_water = df_water[1:]
             df_mead_water.columns = ["Site", "Value", "Date"]
+            # print(df_mead_water)
             # for i in range(4): next(crm)
             # df_mead_water = pd.DataFrame(crm)
             # new_mead_header = df_mead_water.iloc[0]
             # df_mead_water = df_mead_water[1:]
             # df_mead_water.columns = new_mead_header
 
-        print(df_powell_water.tail(10))
-        print(df_mead_water.tail(10))
+        # print(df_powell_water.tail(10))
+        # print(df_mead_water.tail(10))
         start_date = date(1963, 6, 29)
         date_now = date.today()
         delta = date_now - start_date
+        print(delta)
         days = delta.days
-        df_mead_water = df_mead_water[:days]
+        df_mead_water = df_mead_water[9527:]
+        print(df_mead_water)
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-        print(df_total.tail(10))
+        # print(df_total.tail(10))
     
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
-        print(df_total.tail(10))
+        # print(df_total.tail(10))
      
         # df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         df_total['Value_x'] = df_total['Value_x'].astype(int)
