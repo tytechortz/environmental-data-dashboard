@@ -214,7 +214,7 @@ def lake_graph(n):
 def produce_stats(lake, site, data, date ):
     # print(site)
     # print(type(data))
-    print(date)
+    # print(date)
     # print(lake)
     # print(capacities[site])
     if lake == 'lakepowell' or lake == 'hdmlc':
@@ -267,11 +267,11 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
-        # print(dsata)
+        # print(data.tail(10))
         current_volume = data.iloc[0, 7]
         current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
-        print(cvd)
+        # print(cvd)
         last_v = data.iloc[2, 7]
 
         return current_volume, site, last_v, cvd
@@ -350,7 +350,7 @@ def produce_changes(lake, period, cv, last_v, data):
     Output('selected-water-data', 'children'),
     [Input('lake', 'value')])
 def clean_data(lake):
-    print(lake)
+    # print(lake)
     # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
@@ -462,12 +462,18 @@ def clean_data(lake):
         start_date = date(1963, 6, 29)
         date_now = date.today()
         delta = date_now - start_date
-        print(delta)
+        # print(delta)
         days = delta.days
         df_mead_water = df_mead_water[9527:]
-        print(df_mead_water)
+        # print(df_mead_water)
+        df_mead_water = df_mead_water.set_index('Date')
+        df_mead_water = df_mead_water.sort_index()
+        # print(df_mead_water)
+        df_powell_water = df_powell_water.set_index('Date')
+        df_powell_water = df_powell_water.sort_index()
+        # print(df_powell_water)
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-        # print(df_total.tail(10))
+        # print(df_total)
     
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
         # print(df_total.tail(10))
@@ -479,6 +485,7 @@ def clean_data(lake):
       
         # chopped_df = df_total[df_total['Value'] != 0]
         chopped_df = df_total.drop(df_total.index[0])
+        print(chopped_df)
         return chopped_df.to_json()
 
 @app.callback(
