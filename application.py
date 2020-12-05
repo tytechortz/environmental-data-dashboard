@@ -268,11 +268,11 @@ def get_current_volume(lake, data):
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
         print(data.tail(10))
-        current_volume = data.iloc[0, 7]
-        current_volume_date = data['Date'].iloc[0]
+        current_volume = data['Value'][-1]
+        current_volume_date = data.index[-1]
         cvd = str(current_volume_date)
         # print(cvd)
-        last_v = data.iloc[2, 7]
+        last_v = data['Value'][-2]
 
         return current_volume, site, last_v, cvd
 
@@ -288,19 +288,22 @@ def produce_changes(lake, period, cv, last_v, data):
     df = pd.read_json(data)
   
     if lake == 'combo':
-        df = df.set_index('Date')
-        data = df.sort_index()
-        # print(data.tail(20))
-        current_volume = data.iloc[-1,6]
+        # df = df.set_index('Date')
+        # data = df.sort_index()
+        print(df.tail(20))
+        current_volume = df['Value'][-1]
        
-        past_data = data.iloc[-(int(period)),6]
+        # past_data = data.iloc[-(int(period)),6]
+        past_data = df['Value'][(int(period))]
        
         change = current_volume - past_data
-        annual_min = data.resample('Y').min()
+        # annual_min = data.resample('Y').min()
+        annual_min = df.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        dif_rl = data.iloc[-1,6] - rec_low
+        # dif_rl = data.iloc[-1,6] - rec_low
+        dif_rl = df['Value'][-1] - rec_low
 
         return html.Div([
                 html.Div('Change', style={'text-align':'center'}),
@@ -494,7 +497,7 @@ def clean_data(lake):
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
     df = pd.read_json(data)
-    print(df)
+    # print(df)
     # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
     # print(df)
     # df['Date'] = pd.to_datetime(df['Date'])
