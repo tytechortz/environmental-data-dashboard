@@ -294,9 +294,13 @@ def produce_changes(lake, period, cv, last_v, data):
         current_volume = df['Value'][-1]
        
         # past_data = data.iloc[-(int(period)),6]
-        past_data = df['Value'][(int(period))]
+        past_data = df['Value'][-(int(period))]
+        print(period)
+        print(current_volume)
+        print(past_data)
        
         change = current_volume - past_data
+        print(change)
         # annual_min = data.resample('Y').min()
         annual_min = df.resample('Y').min()
       
@@ -578,7 +582,7 @@ def display_year_selector(product_value):
                     id = 'year',
                     type = 'number',
                     value = current_year,
-                    min = 1950, max = current_year
+                    min = 1950, max = current_year + 1
                 )
 
 @app.callback(
