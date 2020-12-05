@@ -267,7 +267,7 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
-        # print(data.tail(10))
+        print(data.tail(10))
         current_volume = data.iloc[0, 7]
         current_volume_date = data['Date'].iloc[0]
         cvd = str(current_volume_date)
@@ -485,7 +485,7 @@ def clean_data(lake):
       
         # chopped_df = df_total[df_total['Value'] != 0]
         chopped_df = df_total.drop(df_total.index[0])
-        print(chopped_df)
+        # print(chopped_df)
         return chopped_df.to_json()
 
 @app.callback(
@@ -494,12 +494,13 @@ def clean_data(lake):
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
     df = pd.read_json(data)
-    # print(df)
+    print(df)
     # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
     # print(df)
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.set_index('Date')
-    data = df.sort_index()
+    # df['Date'] = pd.to_datetime(df['Date'])
+    # df.index = pd.to_datetime
+    # df = df.set_index('Date')
+    # data = df.sort_index()
 
     traces = []
     if lake == 'hdmlc':
