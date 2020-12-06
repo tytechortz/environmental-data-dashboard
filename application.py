@@ -501,18 +501,18 @@ def clean_data(lake):
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
     df = pd.read_json(data)
-    # print(df)
+    print(df)
     # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
     # print(df)
-    # df['Date'] = pd.to_datetime(df['Date'])
+    df['Date'] = pd.to_datetime(df['Date'])
     # df.index = pd.to_datetime
-    # df = df.set_index('Date')
-    # data = df.sort_index()
+    df = df.set_index('Date')
+    data = df.sort_index()
 
     traces = []
     if lake == 'hdmlc':
         title = 'Lake Mead'
-        for column in data.columns[1:]:
+        for column in df.columns[1:]:
             traces.append(go.Scatter(
                 y = df[column],
                 x = df.index,
