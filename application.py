@@ -504,13 +504,14 @@ def lake_graph(lake, data):
     print(df)
     # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
     # print(df)
-    df['Date'] = pd.to_datetime(df['Date'])
-    # df.index = pd.to_datetime
-    df = df.set_index('Date')
-    data = df.sort_index()
+    
 
     traces = []
     if lake == 'hdmlc':
+        df['Date'] = pd.to_datetime(df['Date'])
+        # df.index = pd.to_datetime
+        df = df.set_index('Date')
+        data = df.sort_index()
         title = 'Lake Mead'
         for column in df.columns[1:]:
             traces.append(go.Scatter(
@@ -519,6 +520,10 @@ def lake_graph(lake, data):
                 name = column
             ))
     elif lake == 'lakepowell':
+        df['Date'] = pd.to_datetime(df['Date'])
+        # df.index = pd.to_datetime
+        df = df.set_index('Date')
+        data = df.sort_index()
         # title = df['Site'][0]
         title = 'Lake Powell'
         traces.append(go.Scatter(
