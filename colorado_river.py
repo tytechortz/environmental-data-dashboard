@@ -5,6 +5,8 @@ import pandas as pd
 import time
 import json
 import requests
+from datetime import datetime, date
+
 # from lake_connect import flaminggorge, powell_latest, powell
 
 
@@ -14,8 +16,17 @@ app.config['suppress_callback_exceptions']=True
 
 capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead Hoover Dam and Powerplant': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800 }
 
-today = time.strftime("%Y-%m-%d")
-# print(today)
+# today = time.strftime("%Y-%m-%d")
+today = datetime.now()
+year = datetime.now().year
+print(year)
+f_date = datetime(year, 1, 1)
+
+print(today)
+delta = today - f_date
+days = delta.days
+print(days)
+
 
 # url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
 
@@ -110,7 +121,7 @@ def river_App():
                                 {'label':'W', 'value':'8'},
                                 {'label':'M', 'value':'31'},
                                 {'label':'Y', 'value':'366'},
-                                {'label':'CY', 'value':'CY'},
+                                {'label':'CY', 'value':''},
                             ],
                             value='2',
                             labelStyle={'display': 'inline'},

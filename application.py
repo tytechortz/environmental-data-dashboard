@@ -429,7 +429,7 @@ def clean_data(lake):
         df_powell_water = df_powell_water.sort_index()
       
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-\    
+   
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
      
         df_total['Value_x'] = df_total['Value_x'].astype(int)
