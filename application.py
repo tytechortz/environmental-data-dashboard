@@ -370,29 +370,19 @@ def clean_data(lake):
             download = s.get(powell_data)
            
             decoded_content = download.content.decode('utf-8')
-            # print(decoded_content)
+        
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            # cr = csv.reader(decoded_content, delimeter=',')
-
-
-            # print(cr)
-
+          
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
             df_water.columns = ["Site", "Value", "Date"]
-            # print(df_water)
-            # new_header = df_water.iloc[0]
-            # print(new_header)
+            
             df_water = df_water[1:]
-            # df_water.columns = new_header
            
             df_water['power level'] = 6124000
-
-            # print(df_water)
        
         chopped_df = df_water.drop(df_water.index[0])
-        # print(chopped_df.tail(20))
 
         return chopped_df.to_json()
             
@@ -404,27 +394,19 @@ def clean_data(lake):
             decoded_content = download.content.decode('utf-8')
 
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            # print(cr)
+    
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
-            # print(df_water.tail(10))
-            # new_header = df_water.iloc[0]
-            # df_water = df_water[1:]
             df_water.columns = ["Site", "Value", "Date"]
         
             df_water['1090'] = 10857000
             df_water['1075'] = 9601000
             df_water['1050'] = 7683000
-            # df['1045'] = 7326000
-            # df['1040'] = 6978000
-            # df['1035'] = 6638000
-            # df['1030'] = 6305000
             df_water['1025'] = 5981000
         
-        # chopped_df = df_water[df_water['Value'] != 0]
         chopped_df = df_water.drop(df_water.index[0])
-        # print(chopped_df)
+       
         return chopped_df.to_json()
 
     elif lake == 'combo':
@@ -435,17 +417,11 @@ def clean_data(lake):
 
             crp = csv.reader(p_decoded_content.splitlines(), delimiter=',')
 
-            # for i in range(4): next(crp)
-            # df_powell_water = pd.DataFrame(crp)
-            # new_powell_header = df_powell_water.iloc[0]
-            # df_powell_water = df_powell_water[1:]
-            # df_powell_water.columns = new_powell_header
-
             for i in range(9): next(crp)
             df_powell_water = pd.DataFrame(crp)
             df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5,7,8]], axis=1)
             df_powell_water.columns = ["Site", "Value", "Date"]
-            # print(df_powell_water)
+         
         with requests.Session() as t:
             m_download = t.get(mead_data)
             m_decoded_content = m_download.content.decode('utf-8')
@@ -454,45 +430,30 @@ def clean_data(lake):
             df_mead_water = pd.DataFrame(crm)
             df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5,7,8]], axis=1)
             
-            # new_header = df_water.iloc[0]
-            # df_water = df_water[1:]
             df_mead_water.columns = ["Site", "Value", "Date"]
-            # print(df_mead_water)
-            # for i in range(4): next(crm)
-            # df_mead_water = pd.DataFrame(crm)
-            # new_mead_header = df_mead_water.iloc[0]
-            # df_mead_water = df_mead_water[1:]
-            # df_mead_water.columns = new_mead_header
-
-        # print(df_powell_water.tail(10))
-        # print(df_mead_water.tail(10))
+           
         start_date = date(1963, 6, 29)
         date_now = date.today()
         delta = date_now - start_date
-        # print(delta)
+      
         days = delta.days
         df_mead_water = df_mead_water[9527:]
-        # print(df_mead_water)
+       
         df_mead_water = df_mead_water.set_index('Date')
         df_mead_water = df_mead_water.sort_index()
-        # print(df_mead_water)
+        
         df_powell_water = df_powell_water.set_index('Date')
         df_powell_water = df_powell_water.sort_index()
-        # print(df_powell_water)
+      
         df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
-        # print(df_total)
-    
+\    
         df_total.rename(columns={'Date_x':'Date'}, inplace=True)
-        # print(df_total.tail(10))
      
-        # df_total = df_total.drop(['Date_y', 'Parameter_x', 'Parameter_y', 'Units_x', 'Units_y'], axis=1)
         df_total['Value_x'] = df_total['Value_x'].astype(int)
         df_total['Value_y'] = df_total['Value_y'].astype(int)
         df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
       
-        # chopped_df = df_total[df_total['Value'] != 0]
         chopped_df = df_total.drop(df_total.index[0])
-        # print(chopped_df)
         return chopped_df.to_json()
 
 @app.callback(
@@ -501,15 +462,10 @@ def clean_data(lake):
     Input('selected-water-data', 'children')])
 def lake_graph(lake, data):
     df = pd.read_json(data)
-    print(df)
-    # df = df.drop(df.columns[[0,1,3,4,5,7,8,9]], axis=1)
-    # print(df)
-    
 
     traces = []
     if lake == 'hdmlc':
         df['Date'] = pd.to_datetime(df['Date'])
-        # df.index = pd.to_datetime
         df = df.set_index('Date')
         data = df.sort_index()
         title = 'Lake Mead'
@@ -521,10 +477,8 @@ def lake_graph(lake, data):
             ))
     elif lake == 'lakepowell':
         df['Date'] = pd.to_datetime(df['Date'])
-        # df.index = pd.to_datetime
         df = df.set_index('Date')
         data = df.sort_index()
-        # title = df['Site'][0]
         title = 'Lake Powell'
         traces.append(go.Scatter(
             y = df['Value'],
@@ -538,7 +492,6 @@ def lake_graph(lake, data):
         )),
     elif lake == 'combo':
         title = 'Lake Powell and Lake Mead'
-        # print(data)
         traces.append(go.Scatter(
             y = df['Value'],
             x = df.index,
