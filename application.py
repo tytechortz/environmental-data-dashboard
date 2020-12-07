@@ -212,11 +212,7 @@ def lake_graph(n):
     Input('current-volume', 'children'),
     Input('cvd', 'children')])
 def produce_stats(lake, site, data, date ):
-    # print(site)
-    # print(type(data))
-    # print(date)
-    # print(lake)
-    # print(capacities[site])
+    
     if lake == 'lakepowell' or lake == 'hdmlc':
         fill_pct = data / capacities[site]
         date = date[0:11]
@@ -246,20 +242,16 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        # print(data.tail(10))
+       
         data['Date'] = pd.to_datetime(data['Date'])
 
         data.set_index(['Date'], inplace=True)
-        # print(data)
+       
         data = data.sort_index()
-        # print(data.tail(15))
         site = data.iloc[-3, 0]
-        # print(site)
       
         current_volume = data.iloc[-1,1]
-        # print(current_volume)
         current_volume_date = data.index[-1]
-        # print(current_volume_date)
         cvd = str(current_volume_date)
         last_v = data.iloc[-1,0]
 
@@ -267,11 +259,9 @@ def get_current_volume(lake, data):
     elif lake == 'combo':
         data = pd.read_json(data)
         site = data.iloc[-1, 0]
-        print(data.tail(10))
         current_volume = data['Value'][-1]
         current_volume_date = data.index[-1]
         cvd = str(current_volume_date)
-        # print(cvd)
         last_v = data['Value'][-2]
 
         return current_volume, site, last_v, cvd
@@ -288,25 +278,18 @@ def produce_changes(lake, period, cv, last_v, data):
     df = pd.read_json(data)
   
     if lake == 'combo':
-        # df = df.set_index('Date')
-        # data = df.sort_index()
-        print(df.tail(20))
+       
         current_volume = df['Value'][-1]
        
-        # past_data = data.iloc[-(int(period)),6]
         past_data = df['Value'][-(int(period))]
-        print(period)
-        print(current_volume)
-        print(past_data)
        
         change = current_volume - past_data
-        print(change)
-        # annual_min = data.resample('Y').min()
+       
         annual_min = df.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        # dif_rl = data.iloc[-1,6] - rec_low
+       
         dif_rl = df['Value'][-1] - rec_low
 
         return html.Div([
