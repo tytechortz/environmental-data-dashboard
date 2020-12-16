@@ -121,7 +121,7 @@ def river_App():
                                 {'label':'W', 'value':'8'},
                                 {'label':'M', 'value':'31'},
                                 {'label':'Y', 'value':'366'},
-                                {'label':'CY', 'value':''},
+                                {'label':'CY', 'value': days},
                             ],
                             value='2',
                             labelStyle={'display': 'inline'},

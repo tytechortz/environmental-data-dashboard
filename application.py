@@ -350,6 +350,7 @@ def clean_data(lake):
     if lake == 'lakepowell':
 
         with requests.Session() as s:
+
             download = s.get(powell_data)
            
             decoded_content = download.content.decode('utf-8')
