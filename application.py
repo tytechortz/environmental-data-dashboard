@@ -250,25 +250,30 @@ def display_annual_min_table(value):
     [Input('selected-water-data', 'children')])
 def display_annual_table(all_data):
     dr = pd.read_json(all_data)
+    print(dr.head(10))
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
     dr.set_index(['Date'], inplace=True)
+    annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+    print(annual_min_all)
     
-    print(dr.head(10))
+    
+    # print(dr.head(10))
+
+    
     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
     dr = dr.reset_index()
-    print(dr.head(10))
+    # print(dr.head(10))
     dr = dr.drop(['Site', 'power level'], 1)
     columns=[
         {"name": i, "id": i,"selectable": True} for i in dr.columns
     ]
-    # del dr['Site', 'power level']
-    # print(dr.columns)
-    print(dr.head(10))
+  
+    # print(dr.head(10))
     
-    print(columns)
+    # print(columns)
     # dr['Date'] = dr['Date']s.dt.strftime('%Y-%m-%d')
     d_min = dr['Value'].min()
-    print(d_min)
+    # print(d_min)
     
 
     return dr.to_dict('records'), columns, d_min 
