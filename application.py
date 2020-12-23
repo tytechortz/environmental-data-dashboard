@@ -210,19 +210,68 @@ def lake_graph(n):
     [Input('lake', 'value')])
 def display_annual_min_table(value):
     if value:
-        return dt.DataTable(id='datatable-interactivity',
+        print(value)
+        return dt.DataTable(id='water-datatable-interactivity',
         data=[{}],
         columns=[{}],
         fixed_rows={'headers': True, 'data': 0},
         style_cell_conditional=[
             {'if': {'column_id': 'Date'},
             'width':'100px'},
-            {'if': {'column_id': 'TMAX'},
-            'width':'100px'},
-            {'if': {'column_id': 'TMIN'},
+            {'if': {'column_id': 'Value'},
             'width':'100px'},
         ],
+        style_data_conditional=[
+            {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(248, 248, 248)'
+            },
+        ],
+        style_header={
+        'backgroundColor': 'rgb(230, 230, 230)',
+        'fontWeight': 'bold'
+        },
+        # editable=True,
+        # filter_action="native",
+        sort_action="native",
+        sort_mode="multi",
+        column_selectable="single",
+        selected_columns=[],
+        selected_rows=[],
+        # page_action="native",
+        page_current= 0,
+        page_size= 10,
         )
+
+@app.callback([
+    Output('water-datatable-interactivity', 'data'),
+    Output('water-datatable-interactivity', 'columns'),
+    Output('d-min', 'children')],
+    [Input('selected-water-data', 'children')])
+def display_annual_table(all_data):
+    dr = pd.read_json(all_data)
+    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    dr.set_index(['Date'], inplace=True)
+    
+    print(dr.head(10))
+    # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    # dr = dr.reset_index()
+    print(dr.head(10))
+    dr = dr.drop(['Site', 'power level'], 1)
+    columns=[
+        {"name": i, "id": i,"selectable": True} for i in dr.columns
+    ]
+    # del dr['Site', 'power level']
+    # print(dr.columns)
+    print(dr.head(10))
+    
+    print(columns)
+    # dr['Date'] = dr['Date']s.dt.strftime('%Y-%m-%d')
+    d_min = dr['Value'].min()
+    print(d_min)
+    
+
+    return dr.to_dict('records'), columns, d_min 
 
 @app.callback(
     Output('water-stats', 'children'),
@@ -268,7 +317,7 @@ def get_current_volume(lake, data):
        
         data = data.sort_index()
         site = data.iloc[-3, 0]
-        print(data.tail(10))
+        # print(data.tail(10))
         current_volume = data.iloc[-1,1]
         current_volume_date = data.index[-1]
         cvd = str(current_volume_date)

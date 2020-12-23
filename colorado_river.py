@@ -161,6 +161,7 @@ def river_App():
             html.Div(id='site', style={'display': 'none'}),
             html.Div(id='cvd', style={'display': 'none'}),
             html.Div(id='last_v', style={'display': 'none'}),
+            html.Div(id='d_min', style={'display': 'none'})
             # html.Div([
             #     dcc.Interval(
             #         id='interval-component',
