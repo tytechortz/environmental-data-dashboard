@@ -255,7 +255,7 @@ def display_annual_table(all_data):
     
     print(dr.head(10))
     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-    # dr = dr.reset_index()
+    dr = dr.reset_index()
     print(dr.head(10))
     dr = dr.drop(['Site', 'power level'], 1)
     columns=[
