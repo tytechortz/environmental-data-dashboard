@@ -206,6 +206,25 @@ def lake_graph(n):
 # Colorado River storage callbacks ###########################
 
 @app.callback(
+    Output('lake-annual-min-table', 'children'),
+    [Input('lake', 'value')])
+def display_annual_min_table(value):
+    if value:
+        return dt.DataTable(id='datatable-interactivity',
+        data=[{}],
+        columns=[{}],
+        fixed_rows={'headers': True, 'data': 0},
+        style_cell_conditional=[
+            {'if': {'column_id': 'Date'},
+            'width':'100px'},
+            {'if': {'column_id': 'TMAX'},
+            'width':'100px'},
+            {'if': {'column_id': 'TMIN'},
+            'width':'100px'},
+        ],
+        )
+
+@app.callback(
     Output('water-stats', 'children'),
     [Input('lake', 'value'),
     Input('site', 'children'),
@@ -249,7 +268,7 @@ def get_current_volume(lake, data):
        
         data = data.sort_index()
         site = data.iloc[-3, 0]
-      
+        print(data.tail(10))
         current_volume = data.iloc[-1,1]
         current_volume_date = data.index[-1]
         cvd = str(current_volume_date)

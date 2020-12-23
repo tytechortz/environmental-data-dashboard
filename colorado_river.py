@@ -145,6 +145,17 @@ def river_App():
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div([
+                    html.Div([
+                        html.Div(id='lake-annual-min-table'),
+                    ]),
+                ],
+                    className='twelve columns'
+                ),
+            ],
+                className='row'
+            ),
             html.Div(id='selected-water-data', style={'display': 'none'}),
             html.Div(id='current-volume', style={'display': 'none'}),
             html.Div(id='site', style={'display': 'none'}),
