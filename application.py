@@ -255,7 +255,8 @@ def display_annual_table(all_data):
     dr.set_index(['Date'], inplace=True)
     annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
     print(annual_min_all)
-    
+    annual_min_all = annual_min_all.iloc[37:]
+    print(annual_min_all)
     
     # print(dr.head(10))
 
