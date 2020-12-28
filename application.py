@@ -247,15 +247,20 @@ def display_annual_min_table(value):
     Output('water-datatable-interactivity', 'data'),
     Output('water-datatable-interactivity', 'columns'),
     Output('d-min', 'children')],
-    [Input('selected-water-data', 'children')])
-def display_annual_table(all_data):
+    [Input('selected-water-data', 'children'),
+    Input('lake', 'value')])
+def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
     print(dr.head(10))
-    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    print(lake)
+    dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+    # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    dr['Date'] = pd.to_datetime(dr['Date'])
     dr.set_index(['Date'], inplace=True)
     annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
     print(annual_min_all)
     annual_min_all = annual_min_all.iloc[37:]
+    
     print(annual_min_all)
     
     # print(dr.head(10))
@@ -263,12 +268,20 @@ def display_annual_table(all_data):
     
     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
     # dr = dr.reset_index()
+
     dr = annual_min_all.reset_index()
     # print(dr.head(10))
-    dr = dr.drop(['Site', 'power level'], 1)
-    columns=[
-        {"name": i, "id": i,"selectable": True} for i in dr.columns
-    ]
+    if lake == 'lakepowell':
+        dr = dr.drop(['Site', 'power level'], 1)
+        columns=[
+            {"name": i, "id": i, "selectable": True} for i in dr.columns
+        ]
+
+    elif lake == 'hdmlc':
+        dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
+        columns=[
+            {"name": i, "id": i, "selectable": True} for i in dr.columns
+        ]
   
     # print(dr.head(10))
     
