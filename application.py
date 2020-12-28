@@ -270,7 +270,7 @@ def display_annual_table(all_data, lake):
     # dr = dr.reset_index()
 
     dr = annual_min_all.reset_index()
-    # print(dr.head(10))
+    print(dr.head(10))
     if lake == 'lakepowell':
         dr = dr.drop(['Site', 'power level'], 1)
         columns=[
@@ -278,7 +278,7 @@ def display_annual_table(all_data, lake):
         ]
 
     elif lake == 'hdmlc':
-        dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
+        dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
@@ -287,9 +287,10 @@ def display_annual_table(all_data, lake):
     
     # print(columns)
     # dr['Date'] = dr['Date']s.dt.strftime('%Y-%m-%d')
+        
     d_min = dr['Value'].min()
-    # print(d_min)
-    
+        # print(d_min)
+        
 
     return dr.to_dict('records'), columns, d_min 
 
