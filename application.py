@@ -253,10 +253,10 @@ def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
     print(dr.head(10))
     print(lake)
-    dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+    # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    dr['Date'] = pd.to_datetime(dr['Date'])
-    dr.set_index(['Date'], inplace=True)
+    # dr['Date'] = pd.to_datetime(dr['Date'])
+    # dr.set_index(['Date'], inplace=True)
     annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
     print(annual_min_all)
     annual_min_all = annual_min_all.iloc[37:]
@@ -283,6 +283,11 @@ def display_annual_table(all_data, lake):
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
   
+    else:
+        # dr = dr.drop([])
+        columns=[
+            {"name": i, "id": i, "selectable": True} for i in dr.columns
+        ]
     # print(dr.head(10))
     
     # print(columns)
@@ -332,9 +337,9 @@ def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
        
-        data['Date'] = pd.to_datetime(data['Date'])
+        # data['Date'] = pd.to_datetime(data['Date'])
 
-        data.set_index(['Date'], inplace=True)
+        # data.set_index(['Date'], inplace=True)
        
         data = data.sort_index()
         site = data.iloc[-3, 0]
@@ -393,8 +398,8 @@ def produce_changes(lake, period, cv, last_v, data):
             ),
 
     elif lake == 'lakepowell' or 'hdmlc':
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df.set_index('Date')
+        # df['Date'] = pd.to_datetime(df['Date'])
+        # df = df.set_index('Date')
         data = df.sort_index()
         # print(data.tail(10))
         current_volume = data.iloc[-0,-0]
@@ -454,6 +459,9 @@ def clean_data(lake):
             df_water = df_water[1:]
            
             df_water['power level'] = 6124000
+
+            df_water = df_water.set_index("Date")
+            df_water = df_water.sort_index()
        
         chopped_df = df_water.drop(df_water.index[0])
 
@@ -477,6 +485,9 @@ def clean_data(lake):
             df_water['1075'] = 9601000
             df_water['1050'] = 7683000
             df_water['1025'] = 5981000
+
+            df_water = df_water.set_index("Date")
+            df_water = df_water.sort_index()
         
         chopped_df = df_water.drop(df_water.index[0])
        
@@ -549,8 +560,8 @@ def lake_graph(lake, data):
                 name = column
             ))
     elif lake == 'lakepowell':
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df.set_index('Date')
+        # df['Date'] = pd.to_datetime(df['Date'])
+        # df = df.set_index('Date')
         data = df.sort_index()
         title = 'Lake Powell'
         traces.append(go.Scatter(
