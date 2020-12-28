@@ -251,17 +251,17 @@ def display_annual_min_table(value):
     Input('lake', 'value')])
 def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
-    print(dr.head(10))
-    print(lake)
+    # print(dr.head(10))
+    # print(lake)
     # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
     # dr['Date'] = pd.to_datetime(dr['Date'])
     # dr.set_index(['Date'], inplace=True)
-    annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-    print(annual_min_all)
-    annual_min_all = annual_min_all.iloc[37:]
+    # annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+    # print(annual_min_all)
+    # annual_min_all = annual_min_all.iloc[37:]
     
-    print(annual_min_all)
+    # print(annual_min_all)
     
     # print(dr.head(10))
 
@@ -269,21 +269,39 @@ def display_annual_table(all_data, lake):
     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
     # dr = dr.reset_index()
 
-    dr = annual_min_all.reset_index()
+    # dr = annual_min_all.reset_index()
     print(dr.head(10))
     if lake == 'lakepowell':
+        annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        print(annual_min_all)
+        annual_min_all = annual_min_all.iloc[37:]
+        dr = annual_min_all.reset_index()
         dr = dr.drop(['Site', 'power level'], 1)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
 
     elif lake == 'hdmlc':
+        annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        print(annual_min_all)
+        annual_min_all = annual_min_all.iloc[37:]
+        dr = annual_min_all.reset_index()
         dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
   
     else:
+        dr = dr.drop(['Site_x', 'Value_x', 'Site_y', 'Value_y'], 1)
+        print(dr.head(10))
+        annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        print(annual_min_all)
+        annual_min_all = annual_min_all.iloc[37:]
+        dr = annual_min_all.reset_index()
+        # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+        # dr['Date'] = pd.to_datetime(dr['Date'])
+        # dr.set_index(['Date'], inplace=True)
         # dr = dr.drop([])
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
@@ -383,6 +401,7 @@ def produce_changes(lake, period, cv, last_v, data):
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
+        print(rec_low)
        
         dif_rl = df['Value'][-1] - rec_low
 
@@ -549,8 +568,8 @@ def lake_graph(lake, data):
 
     traces = []
     if lake == 'hdmlc':
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df.set_index('Date')
+        # df['Date'] = pd.to_datetime(df['Date'])
+        # df = df.set_index('Date')
         data = df.sort_index()
         title = 'Lake Mead'
         for column in df.columns[1:]:
