@@ -251,7 +251,10 @@ def display_annual_min_table(value):
     Input('lake', 'value')])
 def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
-    # print(dr.head(10))
+    print(dr.head(10))
+    # print(type(dr.index.dtypes))
+    
+   
     # print(lake)
     # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
@@ -272,10 +275,18 @@ def display_annual_table(all_data, lake):
     # dr = annual_min_all.reset_index()
     print(dr.head(10))
     if lake == 'lakepowell':
+        # print(dr)
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-        print(annual_min_all)
+        # print(annual_min_all)
         annual_min_all = annual_min_all.iloc[37:]
+        print(annual_min_all)
         dr = annual_min_all.reset_index()
+        print(dr)
+        set(dr['index'].dt.date)
+        dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        # dr['index'] = dr['index'].date()
+        print(type(dr['index'][0]))
+        
         dr = dr.drop(['Site', 'power level'], 1)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
@@ -283,7 +294,7 @@ def display_annual_table(all_data, lake):
 
     elif lake == 'hdmlc':
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-        print(annual_min_all)
+        # print(annual_min_all)
         annual_min_all = annual_min_all.iloc[37:]
         dr = annual_min_all.reset_index()
         dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
@@ -293,9 +304,9 @@ def display_annual_table(all_data, lake):
   
     else:
         dr = dr.drop(['Site_x', 'Value_x', 'Site_y', 'Value_y'], 1)
-        print(dr.head(10))
+        # print(dr.head(10))
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-        print(annual_min_all)
+        # print(annual_min_all)
         annual_min_all = annual_min_all.iloc[37:]
         dr = annual_min_all.reset_index()
         # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
@@ -474,7 +485,10 @@ def clean_data(lake):
             df_water = pd.DataFrame(cr)
             df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
             df_water.columns = ["Site", "Value", "Date"]
-            
+            # print(df_water.head(10))
+            print(type(df_water['Date'].dtypes))
+            # df_water['Date'] = pd.to_datetime(df_water['Date'])
+            print(df_water.head())
             df_water = df_water[1:]
            
             df_water['power level'] = 6124000
