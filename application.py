@@ -296,28 +296,30 @@ def display_annual_table(all_data, lake):
         annual_min_all = annual_min_all.iloc[37:]
 
         dr = annual_min_all.reset_index()
+
         set(dr['index'].dt.date)
 
         dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
 
         dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
-        
+
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
   
     else:
         dr = dr.drop(['Site_x', 'Value_x', 'Site_y', 'Value_y'], 1)
-        # print(dr.head(10))
+       
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-        # print(annual_min_all)
+       
         annual_min_all = annual_min_all.iloc[37:]
+
         dr = annual_min_all.reset_index()
-        # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
-        # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-        # dr['Date'] = pd.to_datetime(dr['Date'])
-        # dr.set_index(['Date'], inplace=True)
-        # dr = dr.drop([])
+
+        set(dr['index'].dt.date)
+
+        dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
