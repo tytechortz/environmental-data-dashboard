@@ -745,11 +745,105 @@ def max_stats(product, d_max_max, admaxh, d_min_max, d_min_min, adminl, d_max_mi
         ]),
       
 
+# @app.callback(
+#     Output('ar-table', 'children'),
+#     [Input('product', 'value')])
+# def display_ar_table(value):
+#     if value == 'ar':
+#         return dt.DataTable(id='ar-datatable-interactivity',
+#         data=[{}], 
+#         columns=[{}], 
+#         fixed_rows={'headers': True, 'data': 0},
+#         style_cell_conditional=[
+#             {'if': {'column_id': 'Date'},
+#             'width':'100px'},
+#             {'if': {'column_id': 'TMAX'},
+#             'width':'100px'},
+#             {'if': {'column_id': 'TMIN'},
+#             'width':'100px'},
+#         ],
+#         style_data_conditional=[
+#             {
+#             'if': {'row_index': 'odd'},
+#             'backgroundColor': 'rgb(248, 248, 248)'
+#             },
+#         ],
+#         style_header={
+#         'backgroundColor': 'rgb(230, 230, 230)',
+#         'fontWeight': 'bold'
+#         },
+#         # editable=True,
+#         # filter_action="native",
+#         sort_action="native",
+#         sort_mode="multi",
+#         column_selectable="single",
+#         selected_columns=[],
+#         selected_rows=[],
+#         # page_action="native",
+#         page_current= 0,
+#         page_size= 10,
+#         )
+
+# @app.callback([
+#     Output('ar-datatable-interactivity', 'data'),
+#     Output('ar-datatable-interactivity', 'columns')],
+#     [Input('all-data', 'children')])
+# def display_climate_ar_table(all_data):
+#     dr = pd.read_json(all_data)
+#     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+#     dr.set_index(['Date'], inplace=True)
+#     print(dr)
+#     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+#     dr = dr.reset_index()
+#     columns=[
+#         {"name": i, "id": i,"selectable": True} for i in dr.columns
+#     ]
+    
+#     dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+    
+
+#     return dr.to_dict('records'), columns 
+
+@app.callback([
+    Output('datatable-interactivity', 'data'),
+    Output('datatable-interactivity', 'columns'),
+    Output('d-max-max', 'children'),
+    Output('avg-of-dly-highs', 'children'),
+    Output('d-min-max', 'children'),
+    Output('d-min-min', 'children'),
+    Output('avg-of-dly-lows', 'children'),
+    Output('d-max-min', 'children')],
+    [Input('all-data', 'children'),
+    Input('date', 'date'),
+    Input('product','value')])
+def display_climate_day_table(all_data, selected_date, product):
+    dr = pd.read_json(all_data)
+    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    dr.set_index(['Date'], inplace=True)
+
+    if product == 'climate-for-day':
+
+        dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+        dr = dr.reset_index()
+        columns=[
+            {"name": i, "id": i,"selectable": True} for i in dr.columns
+        ]
+        
+        dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        d_max_max = dr['TMAX'].max()
+        avg_of_dly_highs = dr['TMAX'].mean()
+        d_min_max = dr['TMAX'].min()
+        d_min_min = dr['TMIN'].min()
+        avg_of_dly_lows = dr['TMIN'].mean()
+        d_max_min = dr['TMIN'].max()
+
+        return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min  
+
 @app.callback(
-    Output('annual-rank-table', 'children'),
+    Output('climate-day-table', 'children'),
     [Input('product', 'value')])
-def display_ar_table(value):
-    if value == 'ar':
+def display_climate_table(value):
+    if value == 'climate-for-day':
         return dt.DataTable(id='datatable-interactivity',
         data=[{}], 
         columns=[{}], 
@@ -783,43 +877,7 @@ def display_ar_table(value):
         page_current= 0,
         page_size= 10,
         )
-
-@app.callback([
-    Output('datatable-interactivity', 'data'),
-    Output('datatable-interactivity', 'columns'),
-    Output('d-max-max', 'children'),
-    Output('avg-of-dly-highs', 'children'),
-    Output('d-min-max', 'children'),
-    Output('d-min-min', 'children'),
-    Output('avg-of-dly-lows', 'children'),
-    Output('d-max-min', 'children')],
-    [Input('all-data', 'children'),
-    Input('date', 'date')])
-def display_climate_day_table(all_data, selected_date):
-    dr = pd.read_json(all_data)
-    dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    dr.set_index(['Date'], inplace=True)
-    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-    dr = dr.reset_index()
-    columns=[
-        {"name": i, "id": i,"selectable": True} for i in dr.columns
-    ]
-    
-    dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
-    d_max_max = dr['TMAX'].max()
-    avg_of_dly_highs = dr['TMAX'].mean()
-    d_min_max = dr['TMAX'].min()
-    d_min_min = dr['TMIN'].min()
-    avg_of_dly_lows = dr['TMIN'].mean()
-    d_max_min = dr['TMIN'].max()
-
-    return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min  
-
-@app.callback(
-    Output('climate-day-table', 'children'),
-    [Input('product', 'value')])
-def display_climate_table(value):
-    if value == 'climate-for-day':
+    elif value == 'ar':
         return dt.DataTable(id='datatable-interactivity',
         data=[{}], 
         columns=[{}], 
@@ -1021,8 +1079,8 @@ def display_graph(value):
         return dcc.Graph(id='frs-bar')
     elif value == 'frhm':
         return dcc.Graph(id='frs-heat')
-    elif value == 'ar':
-        return dcc.Graph(id='ar-table')
+    # elif value == 'ar':
+    #     return dcc.Graph(id='ar-table')
 
 @app.callback(
     Output('bar', 'children'),
