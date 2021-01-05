@@ -101,6 +101,7 @@ def temp_App():
                             {'label':'Full Record Bar Graphs', 'value':'frbg'},
                             {'label':'5 Year Moving Avgs', 'value':'fyma-graph'},
                             {'label':'Full Record Heat Map', 'value':'frhm'},
+                            {'label':'Annual Rankings', 'value':'ar'},
                         ],
                         # value='temp-graph',
                         labelStyle={'display': 'block'},
