@@ -156,7 +156,7 @@ def current_co2_stats(co2_data):
 @app.callback(
     Output('CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
-def lake_graph(n):
+def co2_graph(n):
     old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[149])
 
     old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
@@ -1892,7 +1892,7 @@ def daily_ranking(df_fdta, selected_sea, selected_product):
     [Input('selected-sea', 'value'),
     Input('product', 'value'),
     Input('df-fdta', 'children')])
-def record_ice_table(selected_sea, selected_value, df_fdta, max_rows=10):
+def record_ice_table(selected_sea, selected_value, df_fdta, max_rows=11):
     df_fdta = pd.read_json(df_fdta)
     
     annual_max_all = df_fdta[selected_sea].loc[df_fdta.groupby(pd.Grouper(freq='Y')).idxmax().iloc[:, 0]]
@@ -1905,12 +1905,12 @@ def record_ice_table(selected_sea, selected_value, df_fdta, max_rows=10):
                 html.Div([
                     html.Div([
                         html.Div([
-                            html.Div('{:.0f}'.format(sama.iloc[y][1]), style={'text-align': 'center'}) for y in range(0,15)
+                            html.Div('{:.0f}'.format(sama.iloc[y][1]), style={'text-align': 'center'}) for y in range(0,16)
                         ],
                             className='eight columns'
                         ),
                         html.Div([
-                            html.Div('{:,.0f}'.format(sama.iloc[y,0]), style={'text-align': 'left'}) for y in range(0,15)
+                            html.Div('{:,.0f}'.format(sama.iloc[y,0]), style={'text-align': 'left'}) for y in range(0,16)
                         ],
                             className='four columns'
                         ),  
@@ -1928,7 +1928,7 @@ def record_ice_table(selected_sea, selected_value, df_fdta, max_rows=10):
     Output('annual-min-table', 'children'),
     [Input('selected-sea', 'value'),
     Input('df-fdta', 'children')])
-def record_ice_table_a(selected_sea, df_fdta, max_rows=10):
+def record_ice_table_a(selected_sea, df_fdta, max_rows=11):
     df_fdta = pd.read_json(df_fdta)
     annual_min_all = df_fdta[selected_sea].loc[df_fdta.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
     sorted_annual_min_all = annual_min_all.sort_values(axis=0, ascending=True)
@@ -1939,12 +1939,12 @@ def record_ice_table_a(selected_sea, df_fdta, max_rows=10):
                 html.Div([
                     html.Div([
                         html.Div([
-                            html.Div('{:.0f}'.format(sama.iloc[y][1]), style={'text-align': 'center'}) for y in range(0,15)
+                            html.Div('{:.0f}'.format(sama.iloc[y][1]), style={'text-align': 'center'}) for y in range(0,16)
                         ],
                             className='eight columns'
                         ),
                         html.Div([
-                            html.Div('{:,.0f}'.format(sama.iloc[y,0]), style={'text-align': 'left'}) for y in range(0,15)
+                            html.Div('{:,.0f}'.format(sama.iloc[y,0]), style={'text-align': 'left'}) for y in range(0,16)
                         ],
                             className='four columns'
                         ),  
@@ -1968,7 +1968,7 @@ def annual_ranking(selected_product):
 
         x = 0
 
-        rankings = [['2006', 0],['2007', 0],['2008', 0],['2009', 0],['2010', 0],['2011', 0],['2012', 0],['2013', 0],['2014', 0],['2015', 0],['2016', 0],['2017', 0],['2018', 0],['2019', 0],['2020', 0]]
+        rankings = [['2006', 0],['2007', 0],['2008', 0],['2009', 0],['2010', 0],['2011', 0],['2012', 0],['2013', 0],['2014', 0],['2015', 0],['2016', 0],['2017', 0],['2018', 0],['2019', 0],['2020', 0],['2021', 0]]
         rank = pd.DataFrame(rankings, columns = ['Year','Pts'])
     
         while x < 366:
@@ -1996,12 +1996,12 @@ def annual_ranking(selected_product):
                 html.Div([
                     html.Div([
                         html.Div([
-                            html.Div('{}'.format(sorted_rank.iloc[y][0]), style={'text-align': 'center'}) for y in range(0,15)
+                            html.Div('{}'.format(sorted_rank.iloc[y][0]), style={'text-align': 'center'}) for y in range(0,16)
                         ],
                             className='eight columns'
                         ),
                         html.Div([
-                            html.Div('{:,}'.format(sorted_rank.iloc[y,1]), style={'text-align': 'left'}) for y in range(0,15)
+                            html.Div('{:,}'.format(sorted_rank.iloc[y,1]), style={'text-align': 'left'}) for y in range(0,16)
                         ],
                             className='four columns'
                         ),  
