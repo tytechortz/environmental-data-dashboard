@@ -1294,6 +1294,9 @@ def produce_annual_ranks(data, norms,selected_product):
         print(temps.head(15))
         temps.set_index('Date', inplace=True)
         print(temps.head(15))
+        temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
+
+        print(temps.head())
 
 @app.callback(
     Output('graph-stats', 'children'),
