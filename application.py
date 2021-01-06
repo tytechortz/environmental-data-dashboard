@@ -1278,9 +1278,7 @@ def produce_annual_ranks(data, norms,selected_product):
         temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
         temps['d'] = temps.Date.dt.day
         temps['m'] = temps.Date.dt.month
-        # temps.set_index(['Date'], inplace=True)
-        # print(temps)
-        # temps.loc[:,'nh'] 
+        
         df_norms = pd.read_json(norms)
         # print(df_norms)
         df_norms['date'] = pd.to_datetime(df_norms[2], unit='ms')
@@ -1291,16 +1289,11 @@ def produce_annual_ranks(data, norms,selected_product):
         df_norms['m'] = df_norms.date.dt.month
         # df_norms.set_index(['Date'], inplace=True)
         print(df_norms.head())
-        temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm'], axis=1)
-        # temps = pd.merge(df_norms, how='outer', on=['m', 'd'])
-        # temps = temps.drop([0,1], axis=1)
-        # temps.columns = ['date','TMAX','TMIN']
-        # temps['date'] = pd.to_datetime(temps['date'], unit='ms')
-        # temps = temps.set_index(['date'])
-        # temps['dif'] = temps['TMAX'] - temps['TMIN']
-        # print(df_norms)
+        temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
+       
         print(temps.head(15))
-        # print(df_norms.tail(20))
+        temps.set_index('Date', inplace=True)
+        print(temps.head(15))
 
 @app.callback(
     Output('graph-stats', 'children'),
