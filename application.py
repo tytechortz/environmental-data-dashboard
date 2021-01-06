@@ -1276,7 +1276,8 @@ def produce_annual_ranks(data, norms,selected_product):
     if selected_product == 'ar':
         temps = pd.read_json(data)
         temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
-        temps['day'] = temps.Date.dt.day
+        temps['d'] = temps.Date.dt.day
+        temps['m'] = temps.Date.dt.month
         temps.set_index(['Date'], inplace=True)
         # print(temps)
         # temps.loc[:,'nh'] 
