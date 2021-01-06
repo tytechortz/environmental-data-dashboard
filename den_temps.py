@@ -226,6 +226,7 @@ def temp_App():
             html.Div(id='avg-of-dly-lows', style={'display': 'none'}),
             html.Div(id='d-max-min', style={'display': 'none'}),
             html.Div(id='temps', style={'display': 'none'}),
+            html.Div(id='annual-ranks', style={'display': 'none'}),
         ]
     )
 

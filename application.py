@@ -820,6 +820,7 @@ def display_climate_day_table(all_data, selected_date, product):
     dr = pd.read_json(all_data)
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
     dr.set_index(['Date'], inplace=True)
+    print(dr.head())
 
     if product == 'climate-for-day':
 
@@ -883,12 +884,12 @@ def display_climate_table(value):
         columns=[{}], 
         fixed_rows={'headers': True, 'data': 0},
         style_cell_conditional=[
-            {'if': {'column_id': 'Date'},
-            'width':'100px'},
-            {'if': {'column_id': 'TMAX'},
-            'width':'100px'},
-            {'if': {'column_id': 'TMIN'},
-            'width':'100px'},
+            # {'if': {'column_id': 'Date'},
+            # 'width':'100px'},
+            # {'if': {'column_id': 'TMAX'},
+            # 'width':'100px'},
+            # {'if': {'column_id': 'TMIN'},
+            # 'width':'100px'},
         ],
         style_data_conditional=[
             {
@@ -1267,12 +1268,42 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
     return {'data': trace, 'layout': layout}, temps.to_json()
 
 @app.callback(
+    Output('annual-ranks', 'children'),
+    [Input('all-data', 'children'),
+    Input('norms', 'children'),
+    Input('product','value')])
+def produce_annual_ranks(data, norms,selected_product):
+    if selected_product == 'ar':
+        temps = pd.read_json(data)
+        temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
+        temps['day'] = temps.Date.dt.day
+        temps.set_index(['Date'], inplace=True)
+        # print(temps)
+        # temps.loc[:,'nh'] 
+        df_norms = pd.read_json(norms)
+        print(df_norms)
+        df_norms['Date'] = pd.to_datetime(df_norms[2], unit='ms')
+        print(df_norms)
+        df_norms = df_norms.drop([1,2], axis=1)
+        print(df_norms)
+        df_norms.set_index(['Date'], inplace=True)
+        print(df_norms)
+        # temps = temps.drop([0,1], axis=1)
+        # temps.columns = ['date','TMAX','TMIN']
+        # temps['date'] = pd.to_datetime(temps['date'], unit='ms')
+        # temps = temps.set_index(['date'])
+        # temps['dif'] = temps['TMAX'] - temps['TMIN']
+        
+        print(temps.head(15))
+
+@app.callback(
     Output('graph-stats', 'children'),
     [Input('temps', 'children'),
     Input('product','value')])
 def display_graph_stats(temps, selected_product):
     temps = pd.read_json(temps)
     temps.index = pd.to_datetime(temps.index, unit='ms')
+    print(temps.head(10))
     temps = temps[np.isfinite(temps['TMAX'])]
     day_count = temps.shape[0]
     rec_highs = len(temps[temps['TMAX'] == temps['rh']])
