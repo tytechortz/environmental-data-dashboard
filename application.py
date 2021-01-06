@@ -1287,6 +1287,7 @@ def produce_annual_ranks(data, norms,selected_product):
         print(df_norms)
         df_norms = df_norms.drop([1,2], axis=1)
         print(df_norms)
+        df_norms['d'] = df_norms.Date.dt.day
         df_norms.set_index(['Date'], inplace=True)
         print(df_norms)
         # temps = temps.drop([0,1], axis=1)
