@@ -1288,15 +1288,18 @@ def produce_annual_ranks(data, norms,selected_product):
         df_norms['d'] = df_norms.date.dt.day
         df_norms['m'] = df_norms.date.dt.month
         # df_norms.set_index(['Date'], inplace=True)
-        print(df_norms.head())
+        # print(df_norms.head())
         temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
        
-        print(temps.head(15))
+        # print(temps.head(15))
         temps.set_index('Date', inplace=True)
-        print(temps.head(15))
+        # print(temps.head(15))
         temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
 
         print(temps.head())
+        annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values()
+        # annual_temp_totals = annual_temp_totals.sort_values('dd')
+        print(annual_temp_totals.head(20))
 
 @app.callback(
     Output('graph-stats', 'children'),
