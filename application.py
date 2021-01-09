@@ -1297,7 +1297,7 @@ def produce_annual_ranks(data, norms,selected_product):
         temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
 
         print(temps.head())
-        annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values()
+        annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
         # annual_temp_totals = annual_temp_totals.sort_values('dd')
         print(annual_temp_totals.head(20))
 
