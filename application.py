@@ -870,7 +870,7 @@ def display_climate_day_table(all_data, norms, selected_date, value):
         annual_temp_totals = pd.DataFrame(annual_temp_totals)
         print(annual_temp_totals)
         # annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
-        annual_temp_totals['Date'] = annual_temp_totals['Date'].dt.strftime('%Y-%m-%d')
+        annual_temp_totals['Date'] = annual_temp_totals['Date'].dt.strftime('%Y')
         annual_temp_totals['dd'] = annual_temp_totals['dd'].astype(int)
 
         columns=[
