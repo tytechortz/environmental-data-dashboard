@@ -634,6 +634,7 @@ def lake_graph(lake, data):
 @app.callback(Output('all-data', 'children'),
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
+    # print(product_value)
     cleaned_all_temps = df_all_temps
     # print(cleaned_all_temps.tail())
     cleaned_all_temps.columns=['dow','sta','Date','TMAX','TMIN']
@@ -647,7 +648,7 @@ def all_temps_cleaner(product_value):
     [Input('product', 'value')])
     # Input('year', 'value')])
 def display_date_selector(product_value):
-    if product_value == 'climate-for-day':
+    if product_value == 'climate-for-day' or product_value == 'temp-annual-ranks':
         return  html.P('Select Date (MM-DD)'), dcc.DatePickerSingle(
                     id='date',
                     display_format='MM-DD',
@@ -814,20 +815,30 @@ def max_stats(product, d_max_max, admaxh, d_min_max, d_min_min, adminl, d_max_mi
     Output('avg-of-dly-lows', 'children'),
     Output('d-max-min', 'children')],
     [Input('all-data', 'children'),
+    Input('norms', 'children'),
     Input('date', 'date'),
     Input('product','value')])
-def display_climate_day_table(all_data, selected_date, product):
+def display_climate_day_table(all_data, norms, selected_date, value):
+    print(value)
     dr = pd.read_json(all_data)
+    df_norms = pd.read_json(norms)
+    # ar = pd.read_json(annual_ranks)
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    dr.set_index(['Date'], inplace=True)
+    
     print(dr.head())
+    print(df_norms)
+    
+    # ar.index = pd.to_datetime()
+    # print(ar.head())
+    
+    # print(ar)
 
-    if product == 'climate-for-day':
-
+    if value == 'climate-for-day':
+        dr.set_index(['Date'], inplace=True)
         dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
         dr = dr.reset_index()
         columns=[
-            {"name": i, "id": i,"selectable": True} for i in dr.columns
+            {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
         
         dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
@@ -838,80 +849,114 @@ def display_climate_day_table(all_data, selected_date, product):
         avg_of_dly_lows = dr['TMIN'].mean()
         d_max_min = dr['TMIN'].max()
 
-        return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min  
+        return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min 
+
+    elif value == 'temp-annual-ranks':
+        dr['d'] = dr.Date.dt.day
+        dr['m'] = dr.Date.dt.month
+
+        
+        df_norms['date'] = pd.to_datetime(df_norms[2], unit='ms')
+        df_norms = df_norms.drop([1,2], axis=1)
+
+        df_norms['d'] = df_norms.date.dt.day
+        df_norms['m'] = df_norms.date.dt.month
+
+        temps = dr.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
+        temps.set_index('Date', inplace=True)
+        temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
+        annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
+        annual_temp_totals = annual_temp_totals.reset_index()
+        annual_temp_totals = pd.DataFrame(annual_temp_totals)
+        print(annual_temp_totals)
+        annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
+        columns=[
+            {"name": i, "id": i, "selectable": True} for i in annual_temp_totals.columns
+        ]
+
+        dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        d_max_max = dr['TMAX'].max()
+        avg_of_dly_highs = dr['TMAX'].mean()
+        d_min_max = dr['TMAX'].min()
+        d_min_min = dr['TMIN'].min()
+        avg_of_dly_lows = dr['TMIN'].mean()
+        d_max_min = dr['TMIN'].max()
+
+        return annual_temp_totals.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min
 
 @app.callback(
     Output('climate-day-table', 'children'),
     [Input('product', 'value')])
 def display_climate_table(value):
-    if value == 'climate-for-day':
-        return dt.DataTable(id='datatable-interactivity',
-        data=[{}], 
-        columns=[{}], 
-        fixed_rows={'headers': True, 'data': 0},
-        style_cell_conditional=[
-            {'if': {'column_id': 'Date'},
-            'width':'100px'},
-            {'if': {'column_id': 'TMAX'},
-            'width':'100px'},
-            {'if': {'column_id': 'TMIN'},
-            'width':'100px'},
-        ],
-        style_data_conditional=[
-            {
-            'if': {'row_index': 'odd'},
-            'backgroundColor': 'rgb(248, 248, 248)'
-            },
-        ],
-        style_header={
-        'backgroundColor': 'rgb(230, 230, 230)',
-        'fontWeight': 'bold'
+    # print(value)
+    # if value == 'climate-for-day' or value == 'temp-annual-ranks':
+    return dt.DataTable(id='datatable-interactivity',
+    data=[{}], 
+    columns=[{}], 
+    fixed_rows={'headers': True, 'data': 0},
+    style_cell_conditional=[
+        {'if': {'column_id': 'Date'},
+        'width':'100px'},
+        {'if': {'column_id': 'TMAX'},
+        'width':'100px'},
+        {'if': {'column_id': 'TMIN'},
+        'width':'100px'},
+    ],
+    style_data_conditional=[
+        {
+        'if': {'row_index': 'odd'},
+        'backgroundColor': 'rgb(248, 248, 248)'
         },
-        # editable=True,
-        # filter_action="native",
-        sort_action="native",
-        sort_mode="multi",
-        column_selectable="single",
-        selected_columns=[],
-        selected_rows=[],
-        # page_action="native",
-        page_current= 0,
-        page_size= 10,
-        )
-    elif value == 'ar':
-        return dt.DataTable(id='datatable-interactivity',
-        data=[{}], 
-        columns=[{}], 
-        fixed_rows={'headers': True, 'data': 0},
-        style_cell_conditional=[
-            # {'if': {'column_id': 'Date'},
-            # 'width':'100px'},
-            # {'if': {'column_id': 'TMAX'},
-            # 'width':'100px'},
-            # {'if': {'column_id': 'TMIN'},
-            # 'width':'100px'},
-        ],
-        style_data_conditional=[
-            {
-            'if': {'row_index': 'odd'},
-            'backgroundColor': 'rgb(248, 248, 248)'
-            },
-        ],
-        style_header={
-        'backgroundColor': 'rgb(230, 230, 230)',
-        'fontWeight': 'bold'
-        },
-        # editable=True,
-        # filter_action="native",
-        sort_action="native",
-        sort_mode="multi",
-        column_selectable="single",
-        selected_columns=[],
-        selected_rows=[],
-        # page_action="native",
-        page_current= 0,
-        page_size= 10,
-        )
+    ],
+    style_header={
+    'backgroundColor': 'rgb(230, 230, 230)',
+    'fontWeight': 'bold'
+    },
+    # editable=True,
+    # filter_action="native",
+    sort_action="native",
+    sort_mode="multi",
+    column_selectable="single",
+    selected_columns=[],
+    selected_rows=[],
+    # page_action="native",
+    page_current= 0,
+    page_size= 10,
+    )
+    # elif value == 'temp-annual-ranks':
+    #     return dt.DataTable(id='datatable-interactivity',
+    #     data=[{}], 
+    #     columns=[{}], 
+    #     fixed_rows={'headers': True, 'data': 0},
+    #     style_cell_conditional=[
+    #         # {'if': {'column_id': 'Date'},
+    #         # 'width':'100px'},
+    #         # {'if': {'column_id': 'TMAX'},
+    #         # 'width':'100px'},
+    #         # {'if': {'column_id': 'TMIN'},
+    #         # 'width':'100px'},
+    #     ],
+    #     style_data_conditional=[
+    #         {
+    #         'if': {'row_index': 'odd'},
+    #         'backgroundColor': 'rgb(248, 248, 248)'
+    #         },
+    #     ],
+    #     style_header={
+    #     'backgroundColor': 'rgb(230, 230, 230)',
+    #     'fontWeight': 'bold'
+    #     },
+    #     # editable=True,
+    #     # filter_action="native",
+    #     sort_action="native",
+    #     sort_mode="multi",
+    #     column_selectable="single",
+    #     selected_columns=[],
+    #     selected_rows=[],
+    #     # page_action="native",
+    #     page_current= 0,
+    #     page_size= 10,
+    #     )
 
 @app.callback(
     Output('climate-day-bar', 'figure'),
@@ -1267,39 +1312,46 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
         )
     return {'data': trace, 'layout': layout}, temps.to_json()
 
-@app.callback(
-    Output('annual-ranks', 'children'),
-    [Input('all-data', 'children'),
-    Input('norms', 'children'),
-    Input('product','value')])
-def produce_annual_ranks(data, norms,selected_product):
-    if selected_product == 'ar':
-        temps = pd.read_json(data)
-        temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
-        temps['d'] = temps.Date.dt.day
-        temps['m'] = temps.Date.dt.month
+# @app.callback(
+#     Output('temp-annual-rankings', 'children'),
+#     [Input('all-data', 'children'),
+#     Input('norms', 'children'),
+#     Input('product','value')])
+# def produce_annual_ranks(data, norms, value):
+#     if value == 'temp-annual-ranks' or value == 'climate-for-day':
+#         temps = pd.read_json(data)
+#         temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
+#         temps['d'] = temps.Date.dt.day
+#         temps['m'] = temps.Date.dt.month
         
-        df_norms = pd.read_json(norms)
-        # print(df_norms)
-        df_norms['date'] = pd.to_datetime(df_norms[2], unit='ms')
-        # print(df_norms)
-        df_norms = df_norms.drop([1,2], axis=1)
-        # print(df_norms)
-        df_norms['d'] = df_norms.date.dt.day
-        df_norms['m'] = df_norms.date.dt.month
-        # df_norms.set_index(['Date'], inplace=True)
-        # print(df_norms.head())
-        temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
-       
-        # print(temps.head(15))
-        temps.set_index('Date', inplace=True)
-        # print(temps.head(15))
-        temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
+#         df_norms = pd.read_json(norms)
+#         # print(df_norms)
+#         df_norms['date'] = pd.to_datetime(df_norms[2], unit='ms')
+#         # print(df_norms)
+#         df_norms = df_norms.drop([1,2], axis=1)
+#         # print(df_norms)
+#         df_norms['d'] = df_norms.date.dt.day
+#         df_norms['m'] = df_norms.date.dt.month
+#         # df_norms.set_index(['Date'], inplace=True)
+#         # print(df_norms.head())
+#         temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
+        
+#         # print(temps.head(15))
+#         temps.set_index('Date', inplace=True)
+#         # print(temps.head(15))
+#         temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
+#         # print(type(temps))
+#         # print(temps.head())
+#         annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
 
-        print(temps.head())
-        annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
-        # annual_temp_totals = annual_temp_totals.sort_values('dd')
-        print(annual_temp_totals.head(20))
+#         annual_temp_totals = annual_temp_totals.reset_index()
+        
+#         annual_temp_totals = pd.DataFrame(annual_temp_totals)
+#         # print(type(annual_temp_totals))
+#         # annual_temp_totals = annual_temp_totals.sort_values('dd')
+#         print(annual_temp_totals.head(20))
+
+#         return annual_temp_totals.to_json()
 
 @app.callback(
     Output('graph-stats', 'children'),
@@ -1308,7 +1360,7 @@ def produce_annual_ranks(data, norms,selected_product):
 def display_graph_stats(temps, selected_product):
     temps = pd.read_json(temps)
     temps.index = pd.to_datetime(temps.index, unit='ms')
-    print(temps.head(10))
+    # print(temps.head(10))
     temps = temps[np.isfinite(temps['TMAX'])]
     day_count = temps.shape[0]
     rec_highs = len(temps[temps['TMAX'] == temps['rh']])

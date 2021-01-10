@@ -17,7 +17,7 @@ year_count = current_year-startyr
 
 df_all_temps = pd.DataFrame(all_temps,columns=['dow','sta','Date','TMAX','TMIN'])
 
-print(df_all_temps)
+# print(df_all_temps)
 
 # df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate=2020-06-05&units=standard')
 
@@ -101,7 +101,7 @@ def temp_App():
                             {'label':'Full Record Bar Graphs', 'value':'frbg'},
                             {'label':'5 Year Moving Avgs', 'value':'fyma-graph'},
                             {'label':'Full Record Heat Map', 'value':'frhm'},
-                            {'label':'Annual Rankings', 'value':'ar'},
+                            {'label':'Annual Rankings', 'value':'temp-annual-ranks'},
                         ],
                         # value='temp-graph',
                         labelStyle={'display': 'block'},
@@ -226,7 +226,7 @@ def temp_App():
             html.Div(id='avg-of-dly-lows', style={'display': 'none'}),
             html.Div(id='d-max-min', style={'display': 'none'}),
             html.Div(id='temps', style={'display': 'none'}),
-            html.Div(id='annual-ranks', style={'display': 'none'}),
+            # html.Div(id='temp-annual-rankings', style={'display': 'none'}),
         ]
     )
 
