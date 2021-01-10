@@ -869,7 +869,9 @@ def display_climate_day_table(all_data, norms, selected_date, value):
         annual_temp_totals = annual_temp_totals.reset_index()
         annual_temp_totals = pd.DataFrame(annual_temp_totals)
         print(annual_temp_totals)
-        annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
+        # annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
+        annual_temp_totals['Date'] = annual_temp_totals['Date'].dt.strftime('%Y-%m-%d')
+
         columns=[
             {"name": i, "id": i, "selectable": True} for i in annual_temp_totals.columns
         ]
