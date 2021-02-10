@@ -23,7 +23,7 @@ import requests
 pd.set_option('display.max_rows', None)
 # print(df_rec_highs)
 pd.set_option('display.max_rows', None)
-# print(df_all_temps)
+print(df_all_temps)
 today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
@@ -157,7 +157,7 @@ def current_co2_stats(co2_data):
     Output('CO2-data', 'children'),
     [Input('interval-component', 'n_intervals')])
 def co2_graph(n):
-    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[149])
+    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[151])
 
     old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
 
@@ -251,7 +251,7 @@ def display_annual_min_table(value):
     Input('lake', 'value')])
 def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
-    print(dr.head(10))
+    # print(dr.head(10))
     # print(type(dr.index.dtypes))
     
    
@@ -371,6 +371,7 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
+        print(data)
        
         # data['Date'] = pd.to_datetime(data['Date'])
 
@@ -474,8 +475,10 @@ def clean_data(lake):
     # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
 
     powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+    
 
     # mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+    
     mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1937-05-28&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
     if lake == 'lakepowell':
 
@@ -486,15 +489,17 @@ def clean_data(lake):
             decoded_content = download.content.decode('utf-8')
         
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            
           
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
-            df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
+            print(df_water)
+            df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
             df_water.columns = ["Site", "Value", "Date"]
             # print(df_water.head(10))
-            print(type(df_water['Date'].dtypes))
+            # print(type(df_water['Date'].dtypes))
             # df_water['Date'] = pd.to_datetime(df_water['Date'])
-            print(df_water.head())
+            # print(df_water.head())
             df_water = df_water[1:]
            
             df_water['power level'] = 6124000
@@ -517,7 +522,7 @@ def clean_data(lake):
     
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
-            df_water = df_water.drop(df_water.columns[[1,3,4,5,7,8]], axis=1)
+            df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
             df_water.columns = ["Site", "Value", "Date"]
         
             df_water['1090'] = 10857000
@@ -542,7 +547,7 @@ def clean_data(lake):
 
             for i in range(9): next(crp)
             df_powell_water = pd.DataFrame(crp)
-            df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5,7,8]], axis=1)
+            df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5]], axis=1)
             df_powell_water.columns = ["Site", "Value", "Date"]
          
         with requests.Session() as t:
@@ -551,7 +556,7 @@ def clean_data(lake):
             crm = csv.reader(m_decoded_content.splitlines(), delimiter=',')
             for i in range(9): next(crm)
             df_mead_water = pd.DataFrame(crm)
-            df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5,7,8]], axis=1)
+            df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5]], axis=1)
             
             df_mead_water.columns = ["Site", "Value", "Date"]
            
@@ -868,7 +873,7 @@ def display_climate_day_table(all_data, norms, selected_date, value):
         annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
         annual_temp_totals = annual_temp_totals.reset_index()
         annual_temp_totals = pd.DataFrame(annual_temp_totals)
-        print(annual_temp_totals)
+        # print(annual_temp_totals)
         # annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
         annual_temp_totals['Date'] = annual_temp_totals['Date'].dt.strftime('%Y')
         annual_temp_totals['dd'] = annual_temp_totals['dd'].astype(int)
