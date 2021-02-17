@@ -2314,6 +2314,8 @@ def display_graph(value):
         return dcc.Graph(id='monthly-bar')
     elif value == 'extent-date':
         return dcc.Graph(id='daily-rankings-graph')
+    elif value == 'moving-avg':
+        return dcc.Graph(id='moving-avg-graph')
 
 @app.callback(
     Output('current-stats', 'children'),
@@ -2418,7 +2420,7 @@ def update_figure(selected_sea, selected_year, df_fdta):
     Output('moving-avg-graph', 'figure'),
     [Input('product', 'value'),
     Input('df-fdta', 'children')])
-def update_figure_c(selected_product, df_fdta):
+def update_figure_d(selected_product, df_fdta):
     df_fdta = pd.read_json(df_fdta)
     
 
