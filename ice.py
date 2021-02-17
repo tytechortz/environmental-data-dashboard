@@ -217,22 +217,22 @@ def ice_App():
             ],
                 className='row'
             ),
-            # html.Div([
-            #     html.Div([
-            #         html.Div(
-            #             id='moving-avg-graph'
-            #         ), 
-            #     ],
-            #         className='eight columns'
-            #     ),
-            #     html.Div([
-            #         html.Div(id='stats-n-stuff')
-            #     ],
-            #         className='four columns'
-            #     ), 
-            # ],
-            #     className='row'
-            # ),
+            html.Div([
+                html.Div([
+                    html.Div(
+                        id='moving-avg-graph'
+                    ), 
+                ],
+                    className='eight columns'
+                ),
+                html.Div([
+                    html.Div(id='stats-n-stuff')
+                ],
+                    className='four columns'
+                ), 
+            ],
+                className='row'
+            ),
             html.Div([
                 html.Div([
                     html.Div(
