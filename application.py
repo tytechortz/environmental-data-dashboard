@@ -2278,7 +2278,7 @@ def display_year_selector(product_value):
     Output('sea-selector', 'children'),
     [Input('product', 'value')])
 def display_sea_selector(product_value):
-    if product_value == 'years-graph' or product_value == 'extent-date' or product_value == 'extent-stats':
+    if product_value == 'years-graph' or product_value == 'extent-date' or product_value == 'extent-stats' or product_value == 'moving-avg':
         return html.P('Select Sea', style={'text-align': 'center'}) , html.Div([
             dcc.Dropdown(
                 id='selected-sea',
@@ -2422,6 +2422,19 @@ def update_figure(selected_sea, selected_year, df_fdta):
     Input('df-fdta', 'children')])
 def update_figure_d(selected_product, df_fdta):
     df_fdta = pd.read_json(df_fdta)
+
+
+@app.callback(
+    Output('df-year-trailing-avg', 'children'),
+    [Input('product', 'value'),
+    Input('df-fdta', 'children')])
+def update_figure_d(selected_product, df_fdta):
+    if selected_product == 'moving-avg':
+        df_fdta = pd.read_json(df_fdta)
+        print(df_fdta.head())
+
+
+
     
 
 

@@ -247,7 +247,7 @@ def ice_App():
           
             html.Div(id='df-monthly', style={'display': 'none'}),
             html.Div(id='df-fdta', style={'display': 'none'}),
-            html.Div(id='df-trailing-avg', style={'display': 'none'}),
+            html.Div(id='df-year-trailing-avg', style={'display': 'none'}),
     ])
 
 app.layout = ice_App
