@@ -2419,9 +2419,12 @@ def update_figure(selected_sea, selected_year, df_fdta):
 @app.callback(
     Output('moving-avg-graph', 'figure'),
     [Input('product', 'value'),
-    Input('df-fdta', 'children')])
-def update_figure_d(selected_product, df_fdta):
-    df_fdta = pd.read_json(df_fdta)
+    Input('df-year-trailing-avg', 'children')])
+def update_figure_d(selected_product, df_yta):
+    df_yta = pd.read_json(df_yta)
+    print(df_yta.tail())
+    df_yta.index = df_yta.index.strftime("%Y-%m-%d")
+    print(df_yta.tail())
 
 
 @app.callback(
@@ -2432,10 +2435,13 @@ def update_figure_d(selected_product, df_fdta):
 def update_figure_d(selected_product, selected_sea, df_fdta):
     if selected_product == 'moving-avg':
         df = pd.read_json(df_fdta)
-        print(df.head())
+        # print(df.head())
         df_year_rolling = df[selected_sea].rolling(window=365)
         df_year_rolling_mean = df_year_rolling.mean()
-        print(df_year_rolling_mean)
+        # df_year_rolling_mean.set_index[0]
+        df_year_rolling_mean = df_year_rolling_mean.to_frame()
+        print(df_year_rolling_mean.head())
+    return df_year_rolling_mean.to_json(date_format='iso')
 
 
 
