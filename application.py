@@ -2427,11 +2427,16 @@ def update_figure_d(selected_product, df_fdta):
 @app.callback(
     Output('df-year-trailing-avg', 'children'),
     [Input('product', 'value'),
+    Input('selected-sea', 'value'),
     Input('df-fdta', 'children')])
-def update_figure_d(selected_product, df_fdta):
+def update_figure_d(selected_product, selected_sea, df_fdta):
     if selected_product == 'moving-avg':
-        df_fdta = pd.read_json(df_fdta)
-        print(df_fdta.head())
+        df = pd.read_json(df_fdta)
+        print(df.head())
+        df_year_rolling = df[selected_sea].rolling(window=365)
+        df_year_rolling_mean = df_year_rolling.mean()
+        print(df_year_rolling_mean)
+
 
 
 
