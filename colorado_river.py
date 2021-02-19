@@ -19,13 +19,13 @@ capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead
 # today = time.strftime("%Y-%m-%d")
 today = datetime.now()
 year = datetime.now().year
-print(year)
+# print(year)
 f_date = datetime(year, 1, 1)
 
-print(today)
+# print(today)
 delta = today - f_date
 days = delta.days
-print(days)
+# print(days)
 
 
 # url = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=2020-02-01&end=2020-02-20&format=csv'
@@ -162,6 +162,9 @@ def river_App():
                 className='row'
             ),
             html.Div(id='selected-water-data', style={'display': 'none'}),
+            html.Div(id='powell-water-data', style={'display': 'none'}),
+            html.Div(id='mead-water-data', style={'display': 'none'}),
+            html.Div(id='combo-water-data', style={'display': 'none'}),
             html.Div(id='current-volume', style={'display': 'none'}),
             html.Div(id='site', style={'display': 'none'}),
             html.Div(id='cvd', style={'display': 'none'}),

@@ -21,9 +21,9 @@ import csv
 import requests
 
 pd.set_option('display.max_rows', None)
-# print(df_rec_highs)
+
 pd.set_option('display.max_rows', None)
-# print(df_all_temps)
+
 today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
@@ -125,20 +125,14 @@ def avg_co2_stats(co2_data, n):
     [Input('CO2-data', 'children')])
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
-    # df.set_index(df.iloc[0].values)
-    # print(df)
     current_co2 = df.loc[yesterday]
-    # print(current_co2)
     if current_co2.empty:
         current_co2 = df.loc[two_days_ago]
-    # print(current_co2)   
-    # print(type(current_co2))
-    # print(current_co2.name)
-    # current_co2_value = current_co2.iloc[0]['value']
+   
     current_co2_value = current_co2.iloc[-1]
-    # current_co2_date = current_co2.index[-1].strftime('%Y-%m-%d')
+    
     current_co2_date = current_co2.name.strftime('%Y-%m-%d')
-    # print(current_co2_date)
+  
     return html.Div([
         html.Div([
             html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
@@ -161,13 +155,12 @@ def co2_graph(n):
 
     old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
 
-    # print(old_data)
 
     old_data = old_data.iloc[501:]
 
     old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
     old_data = old_data.drop(['year', 'month', 'day'], axis=1)
-    # print(old_data)
+    
 
     new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
     new_data['Date'] = pd.to_datetime(new_data['Date'])
@@ -177,21 +170,20 @@ def co2_graph(n):
     new_data['value'] = new_data['day']
     new_data = new_data.drop(['day'], axis=1)
     new_data = new_data[datetime(2020, 1, 1):]
-    # print(new_data)
+    
    
     frames = [old_data, new_data]
     co2_data = pd.concat(frames)
     co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
-    # print(co2_data)
+   
     max_co2 = co2_data['value'].max()
-    # print(max_co2)
+   
     max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
-    # print(max_co2_date)
+    
     current_co2 = co2_data['value'].iloc[-1]
-    # print(current_co2)
+    
     current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
-    # print(current_co2_date)
-    # monthly_avg = new_data.groupby([new_data.index.year, new_data.index.month]).mean()
+    
     monthly_avg = co2_data.groupby([co2_data.index.year, co2_data.index.month]).mean()
 
     current_year = datetime.now().year
@@ -210,7 +202,7 @@ def co2_graph(n):
     [Input('lake', 'value')])
 def display_annual_min_table(value):
     if value:
-        print(value)
+        
         return dt.DataTable(id='water-datatable-interactivity',
         data=[{}],
         columns=[{}],
@@ -231,14 +223,13 @@ def display_annual_min_table(value):
         'backgroundColor': 'rgb(230, 230, 230)',
         'fontWeight': 'bold'
         },
-        # editable=True,
-        # filter_action="native",
+      
         sort_action="native",
         sort_mode="multi",
         column_selectable="single",
         selected_columns=[],
         selected_rows=[],
-        # page_action="native",
+       
         page_current= 0,
         page_size= 10,
         )
@@ -251,29 +242,7 @@ def display_annual_min_table(value):
     Input('lake', 'value')])
 def display_annual_table(all_data, lake):
     dr = pd.read_json(all_data)
-    # print(dr.head(10))
-    # print(type(dr.index.dtypes))
-    
    
-    # print(lake)
-    # dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
-    # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    # dr['Date'] = pd.to_datetime(dr['Date'])
-    # dr.set_index(['Date'], inplace=True)
-    # annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-    # print(annual_min_all)
-    # annual_min_all = annual_min_all.iloc[37:]
-    
-    # print(annual_min_all)
-    
-    # print(dr.head(10))
-
-    
-    # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-    # dr = dr.reset_index()
-
-    # dr = annual_min_all.reset_index()
-    # print(dr.head(10))
     if lake == 'lakepowell':
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
        
@@ -330,14 +299,9 @@ def display_annual_table(all_data, lake):
         ]
         dr = dr.sort_values('Value')
 
-    print(dr.head(10))
-    
-    # print(columns)
-    # dr['Date'] = dr['Date']s.dt.strftime('%Y-%m-%d')
         
     d_min = dr['Value'].min()
-        # print(d_min)
-        
+     
 
     return dr.to_dict('records'), columns, d_min 
 
@@ -378,15 +342,11 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        print(data.tail())
        
-        # data['Date'] = pd.to_datetime(data['Date'])
-
-        # data.set_index(['Date'], inplace=True)
        
         data = data.sort_index()
         site = data.iloc[-3, 0]
-        # print(data.tail(10))
+      
         current_volume = data.iloc[-1,1]
         current_volume_date = data.index[-1]
         cvd = str(current_volume_date)
@@ -426,7 +386,7 @@ def produce_changes(lake, period, cv, last_v, data):
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        # print(rec_low)
+       
        
         dif_rl = df['Value'][-1] - rec_low
 
@@ -442,19 +402,18 @@ def produce_changes(lake, period, cv, last_v, data):
             ),
 
     elif lake == 'lakepowell' or 'hdmlc':
-        # df['Date'] = pd.to_datetime(df['Date'])
-        # df = df.set_index('Date')
+      
         data = df.sort_index()
-        # print(data.tail(10))
+     
         current_volume = data.iloc[-0,-0]
         current_volume = data['Value'].iloc[-1]
-        # print(type(current_volume))
+      
        
         past_data = data.iloc[-(int(period)),1]
-        # print(past_data)
+      
         
         change = current_volume - past_data
-        # print(change)
+     
         annual_min = data.resample('Y').min()
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
@@ -474,122 +433,241 @@ def produce_changes(lake, period, cv, last_v, data):
                 className='round1'
             ),
 
-@app.callback(
-    Output('selected-water-data', 'children'),
+@app.callback([
+    Output('powell-water-data', 'children'),
+    Output('mead-water-data', 'children'),
+    Output('combo-water-data', 'children')],
     [Input('lake', 'value')])
-def clean_data(lake):
-    # print(lake)
-    # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
-
+def clean_powell_data(lake):
+    
     powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
-    
 
-    # mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
-    
     mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1937-05-28&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
-    if lake == 'lakepowell':
 
-        with requests.Session() as s:
+    # if lake == 'lakepowell':
 
-            download = s.get(powell_data)
-           
-            decoded_content = download.content.decode('utf-8')
+    with requests.Session() as s:
+
+        powell_download = s.get(powell_data)
         
-            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            
-          
-            for i in range(9): next(cr)
-            df_water = pd.DataFrame(cr)
-            # print(df_water)
-            df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
-            df_water.columns = ["Site", "Value", "Date"]
-            # print(df_water.head(10))
-            # print(type(df_water['Date'].dtypes))
-            # df_water['Date'] = pd.to_datetime(df_water['Date'])
-            # print(df_water.head())
-            df_water = df_water[1:]
-           
-            df_water['power level'] = 6124000
-
-            df_water = df_water.set_index("Date")
-            df_water = df_water.sort_index()
-       
-        chopped_df = df_water.drop(df_water.index[0])
-
-        return chopped_df.to_json()
-            
-
-    elif lake == 'hdmlc':
-        with requests.Session() as s:
-            download = s.get(mead_data)
-
-            decoded_content = download.content.decode('utf-8')
-
-            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+        powell_decoded_content = powell_download.content.decode('utf-8')
     
-            for i in range(9): next(cr)
-            df_water = pd.DataFrame(cr)
-            df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
-            df_water.columns = ["Site", "Value", "Date"]
+        crp = csv.reader(powell_decoded_content.splitlines(), delimiter=',')
         
-            df_water['1090'] = 10857000
-            df_water['1075'] = 9601000
-            df_water['1050'] = 7683000
-            df_water['1025'] = 5981000
-
-            df_water = df_water.set_index("Date")
-            df_water = df_water.sort_index()
         
-        chopped_df = df_water.drop(df_water.index[0])
-       
-        return chopped_df.to_json()
+        for i in range(9): next(crp)
+        df_powell_water = pd.DataFrame(crp)
+        
+        df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5]], axis=1)
+        df_powell_water.columns = ["Site", "Value", "Date"]
+    
+        df_powell_water = df_powell_water[1:]
+        
+        df_powell_water['power level'] = 6124000
 
-    elif lake == 'combo':
-        with requests.Session() as s:
-            p_download = s.get(powell_data)
+        df_powell_water = df_powell_water.set_index("Date")
+        df_powell_water = df_powell_water.sort_index()
+    
+    powell_df = df_powell_water.drop(df_powell_water.index[0])
 
-            p_decoded_content = p_download.content.decode('utf-8')
+    with requests.Session() as s:
+        mead_download = s.get(mead_data)
 
-            crp = csv.reader(p_decoded_content.splitlines(), delimiter=',')
+        mead_decoded_content = mead_download.content.decode('utf-8')
 
-            for i in range(9): next(crp)
-            df_powell_water = pd.DataFrame(crp)
-            df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5]], axis=1)
-            df_powell_water.columns = ["Site", "Value", "Date"]
-         
-        with requests.Session() as t:
-            m_download = t.get(mead_data)
-            m_decoded_content = m_download.content.decode('utf-8')
-            crm = csv.reader(m_decoded_content.splitlines(), delimiter=',')
-            for i in range(9): next(crm)
-            df_mead_water = pd.DataFrame(crm)
-            df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5]], axis=1)
-            
-            df_mead_water.columns = ["Site", "Value", "Date"]
-           
-        start_date = date(1963, 6, 29)
-        date_now = date.today()
-        delta = date_now - start_date
-      
-        days = delta.days
-        df_mead_water = df_mead_water[9527:]
-       
-        df_mead_water = df_mead_water.set_index('Date')
+        crm = csv.reader(mead_decoded_content.splitlines(), delimiter=',')
+
+        for i in range(9): next(crm)
+        df_mead_water = pd.DataFrame(crm)
+        df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5]], axis=1)
+        df_mead_water.columns = ["Site", "Value", "Date"]
+    
+        df_mead_water['1090'] = 10857000
+        df_mead_water['1075'] = 9601000
+        df_mead_water['1050'] = 7683000
+        df_mead_water['1025'] = 5981000
+
+        df_mead_water = df_mead_water.set_index("Date")
         df_mead_water = df_mead_water.sort_index()
         
-        df_powell_water = df_powell_water.set_index('Date')
-        df_powell_water = df_powell_water.sort_index()
+    mead_df = df_mead_water.drop(df_mead_water.index[0])
+
+    print(mead_df.head())
+    print(powell_df.head())
+
+           
+    start_date = date(1963, 6, 29)
+    date_now = date.today()
+    delta = date_now - start_date
+    
+    days = delta.days
+    df_mead_water = mead_df[9527:]
+    
+    # df_mead_water = df_mead_water.set_index('Date')
+    # df_mead_water = df_mead_water.sort_index()
+    
+    # df_powell_water = df_powell_water.set_index('Date')
+    # df_powell_water = df_powell_water.sort_index()
+    
+    df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
+
+    df_total.rename(columns={'Date_x':'Date'}, inplace=True)
+    
+    df_total['Value_x'] = df_total['Value_x'].astype(int)
+    df_total['Value_y'] = df_total['Value_y'].astype(int)
+    df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
+    
+    combo_df = df_total.drop(df_total.index[0])
+    print(combo_df.head())
+
+    return powell_df.to_json(), mead_df.to_json(), combo_df.to_json()
+    
+    # elif lake == 'hdmlc':
+        # with requests.Session() as s:
+        #     download = s.get(mead_data)
+
+        #     decoded_content = download.content.decode('utf-8')
+
+        #     cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    
+        #     for i in range(9): next(cr)
+        #     df_water = pd.DataFrame(cr)
+        #     df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
+        #     df_water.columns = ["Site", "Value", "Date"]
+        
+        #     df_water['1090'] = 10857000
+        #     df_water['1075'] = 9601000
+        #     df_water['1050'] = 7683000
+        #     df_water['1025'] = 5981000
+
+        #     df_water = df_water.set_index("Date")
+        #     df_water = df_water.sort_index()
+        
+        # chopped_df = df_water.drop(df_water.index[0])
+       
+    #     return print('hello mead')
+
+    # elif lake == 'combo':
+    #     return (print('wuz up combo'))
+
+    
+
+
+# @app.callback(
+#     Output('selected-water-data', 'children'),
+#     [Input('lake', 'value')])
+# def clean_data(lake):
+# =
+#     # powell_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=lakepowell&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+
+#     powell_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1963-06-28&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+    
+
+#     # mead_data = 'https://water.usbr.gov/api/web/app.php/api/series?sites=hdmlc&parameters=Day.Inst.ReservoirStorage.af&start=1850-01-01&end=' + today + '&format=csv'
+    
+#     mead_data = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1937-05-28&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
+#     if lake == 'lakepowell':
+
+#         with requests.Session() as s:
+
+#             download = s.get(powell_data)
+           
+#             decoded_content = download.content.decode('utf-8')
+        
+#             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            
+          
+#             for i in range(9): next(cr)
+#             df_water = pd.DataFrame(cr)
+#           
+#             df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
+#             df_water.columns = ["Site", "Value", "Date"]
+#          
+#             # df_water['Date'] = pd.to_datetime(df_water['Date'])
+#           
+#             df_water = df_water[1:]
+           
+#             df_water['power level'] = 6124000
+
+#             df_water = df_water.set_index("Date")
+#             df_water = df_water.sort_index()
+       
+#         chopped_df = df_water.drop(df_water.index[0])
+
+#         return chopped_df.to_json()
+            
+
+    # elif lake == 'hdmlc':
+    #     with requests.Session() as s:
+    #         download = s.get(mead_data)
+
+    #         decoded_content = download.content.decode('utf-8')
+
+    #         cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    
+    #         for i in range(9): next(cr)
+    #         df_water = pd.DataFrame(cr)
+    #         df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
+    #         df_water.columns = ["Site", "Value", "Date"]
+        
+    #         df_water['1090'] = 10857000
+    #         df_water['1075'] = 9601000
+    #         df_water['1050'] = 7683000
+    #         df_water['1025'] = 5981000
+
+    #         df_water = df_water.set_index("Date")
+    #         df_water = df_water.sort_index()
+        
+    #     chopped_df = df_water.drop(df_water.index[0])
+       
+    #     return chopped_df.to_json()
+
+#     elif lake == 'combo':
+        # with requests.Session() as s:
+        #     p_download = s.get(powell_data)
+
+        #     p_decoded_content = p_download.content.decode('utf-8')
+
+        #     crp = csv.reader(p_decoded_content.splitlines(), delimiter=',')
+
+        #     for i in range(9): next(crp)
+        #     df_powell_water = pd.DataFrame(crp)
+        #     df_powell_water = df_powell_water.drop(df_powell_water.columns[[1,3,4,5]], axis=1)
+        #     df_powell_water.columns = ["Site", "Value", "Date"]
+         
+        # with requests.Session() as t:
+        #     m_download = t.get(mead_data)
+        #     m_decoded_content = m_download.content.decode('utf-8')
+        #     crm = csv.reader(m_decoded_content.splitlines(), delimiter=',')
+        #     for i in range(9): next(crm)
+        #     df_mead_water = pd.DataFrame(crm)
+        #     df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5]], axis=1)
+            
+        #     df_mead_water.columns = ["Site", "Value", "Date"]
+           
+        # start_date = date(1963, 6, 29)
+        # date_now = date.today()
+        # delta = date_now - start_date
       
-        df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
+        # days = delta.days
+        # df_mead_water = df_mead_water[9527:]
+       
+        # df_mead_water = df_mead_water.set_index('Date')
+        # df_mead_water = df_mead_water.sort_index()
+        
+        # df_powell_water = df_powell_water.set_index('Date')
+        # df_powell_water = df_powell_water.sort_index()
+      
+        # df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
    
-        df_total.rename(columns={'Date_x':'Date'}, inplace=True)
+        # df_total.rename(columns={'Date_x':'Date'}, inplace=True)
      
-        df_total['Value_x'] = df_total['Value_x'].astype(int)
-        df_total['Value_y'] = df_total['Value_y'].astype(int)
-        df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
+        # df_total['Value_x'] = df_total['Value_x'].astype(int)
+        # df_total['Value_y'] = df_total['Value_y'].astype(int)
+        # df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
       
-        chopped_df = df_total.drop(df_total.index[0])
-        return chopped_df.to_json()
+        # chopped_df = df_total.drop(df_total.index[0])
+        # return chopped_df.to_json()
 
 @app.callback(
     Output('lake-levels', 'figure'),
@@ -600,8 +678,7 @@ def lake_graph(lake, data):
 
     traces = []
     if lake == 'hdmlc':
-        # df['Date'] = pd.to_datetime(df['Date'])
-        # df = df.set_index('Date')
+      
         data = df.sort_index()
         title = 'Lake Mead'
         for column in df.columns[1:]:
@@ -611,8 +688,7 @@ def lake_graph(lake, data):
                 name = column
             ))
     elif lake == 'lakepowell':
-        # df['Date'] = pd.to_datetime(df['Date'])
-        # df = df.set_index('Date')
+      
         data = df.sort_index()
         title = 'Lake Powell'
         traces.append(go.Scatter(
@@ -646,9 +722,9 @@ def lake_graph(lake, data):
 @app.callback(Output('all-data', 'children'),
             [Input('product', 'value')])
 def all_temps_cleaner(product_value):
-    # print(product_value)
+  
     cleaned_all_temps = df_all_temps
-    # print(cleaned_all_temps.tail())
+  
     cleaned_all_temps.columns=['dow','sta','Date','TMAX','TMIN']
     
     cleaned_all_temps = cleaned_all_temps.drop(['dow','sta'], axis=1)
@@ -658,7 +734,7 @@ def all_temps_cleaner(product_value):
 @app.callback(
     Output('date-picker', 'children'),
     [Input('product', 'value')])
-    # Input('year', 'value')])
+   
 def display_date_selector(product_value):
     if product_value == 'climate-for-day' or product_value == 'temp-annual-ranks':
         return  html.P('Select Date (MM-DD)'), dcc.DatePickerSingle(
@@ -758,64 +834,6 @@ def max_stats(product, d_max_max, admaxh, d_min_max, d_min_min, adminl, d_max_mi
         ]),
       
 
-# @app.callback(
-#     Output('ar-table', 'children'),
-#     [Input('product', 'value')])
-# def display_ar_table(value):
-#     if value == 'ar':
-#         return dt.DataTable(id='ar-datatable-interactivity',
-#         data=[{}], 
-#         columns=[{}], 
-#         fixed_rows={'headers': True, 'data': 0},
-#         style_cell_conditional=[
-#             {'if': {'column_id': 'Date'},
-#             'width':'100px'},
-#             {'if': {'column_id': 'TMAX'},
-#             'width':'100px'},
-#             {'if': {'column_id': 'TMIN'},
-#             'width':'100px'},
-#         ],
-#         style_data_conditional=[
-#             {
-#             'if': {'row_index': 'odd'},
-#             'backgroundColor': 'rgb(248, 248, 248)'
-#             },
-#         ],
-#         style_header={
-#         'backgroundColor': 'rgb(230, 230, 230)',
-#         'fontWeight': 'bold'
-#         },
-#         # editable=True,
-#         # filter_action="native",
-#         sort_action="native",
-#         sort_mode="multi",
-#         column_selectable="single",
-#         selected_columns=[],
-#         selected_rows=[],
-#         # page_action="native",
-#         page_current= 0,
-#         page_size= 10,
-#         )
-
-# @app.callback([
-#     Output('ar-datatable-interactivity', 'data'),
-#     Output('ar-datatable-interactivity', 'columns')],
-#     [Input('all-data', 'children')])
-# def display_climate_ar_table(all_data):
-#     dr = pd.read_json(all_data)
-#     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-#     dr.set_index(['Date'], inplace=True)
-#     print(dr)
-#     # dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-#     dr = dr.reset_index()
-#     columns=[
-#         {"name": i, "id": i,"selectable": True} for i in dr.columns
-#     ]
-    
-#     dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
-    
-
-#     return dr.to_dict('records'), columns 
 
 @app.callback([
     Output('datatable-interactivity', 'data'),
@@ -831,19 +849,11 @@ def max_stats(product, d_max_max, admaxh, d_min_max, d_min_min, adminl, d_max_mi
     Input('date', 'date'),
     Input('product','value')])
 def display_climate_day_table(all_data, norms, selected_date, value):
-    print(value)
+   
     dr = pd.read_json(all_data)
     df_norms = pd.read_json(norms)
-    # ar = pd.read_json(annual_ranks)
+ 
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    
-    print(dr.head())
-    print(df_norms)
-    
-    # ar.index = pd.to_datetime()
-    # print(ar.head())
-    
-    # print(ar)
 
     if value == 'climate-for-day':
         dr.set_index(['Date'], inplace=True)
@@ -880,8 +890,7 @@ def display_climate_day_table(all_data, norms, selected_date, value):
         annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
         annual_temp_totals = annual_temp_totals.reset_index()
         annual_temp_totals = pd.DataFrame(annual_temp_totals)
-        # print(annual_temp_totals)
-        # annual_temp_totals['Date'] = pd.to_datetime(annual_temp_totals['Date'], unit='ms')
+       
         annual_temp_totals['Date'] = annual_temp_totals['Date'].dt.strftime('%Y')
         annual_temp_totals['dd'] = annual_temp_totals['dd'].astype(int)
 
@@ -903,8 +912,7 @@ def display_climate_day_table(all_data, norms, selected_date, value):
     Output('climate-day-table', 'children'),
     [Input('product', 'value')])
 def display_climate_table(value):
-    # print(value)
-    # if value == 'climate-for-day' or value == 'temp-annual-ranks':
+   
     return dt.DataTable(id='datatable-interactivity',
     data=[{}], 
     columns=[{}], 
@@ -938,40 +946,6 @@ def display_climate_table(value):
     page_current= 0,
     page_size= 10,
     )
-    # elif value == 'temp-annual-ranks':
-    #     return dt.DataTable(id='datatable-interactivity',
-    #     data=[{}], 
-    #     columns=[{}], 
-    #     fixed_rows={'headers': True, 'data': 0},
-    #     style_cell_conditional=[
-    #         # {'if': {'column_id': 'Date'},
-    #         # 'width':'100px'},
-    #         # {'if': {'column_id': 'TMAX'},
-    #         # 'width':'100px'},
-    #         # {'if': {'column_id': 'TMIN'},
-    #         # 'width':'100px'},
-    #     ],
-    #     style_data_conditional=[
-    #         {
-    #         'if': {'row_index': 'odd'},
-    #         'backgroundColor': 'rgb(248, 248, 248)'
-    #         },
-    #     ],
-    #     style_header={
-    #     'backgroundColor': 'rgb(230, 230, 230)',
-    #     'fontWeight': 'bold'
-    #     },
-    #     # editable=True,
-    #     # filter_action="native",
-    #     sort_action="native",
-    #     sort_mode="multi",
-    #     column_selectable="single",
-    #     selected_columns=[],
-    #     selected_rows=[],
-    #     # page_action="native",
-    #     page_current= 0,
-    #     page_size= 10,
-    #     )
 
 @app.callback(
     Output('climate-day-bar', 'figure'),
@@ -1140,8 +1114,7 @@ def display_graph(value):
         return dcc.Graph(id='frs-bar')
     elif value == 'frhm':
         return dcc.Graph(id='frs-heat')
-    # elif value == 'ar':
-    #     return dcc.Graph(id='ar-table')
+   
 
 @app.callback(
     Output('bar', 'children'),
@@ -1327,46 +1300,6 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
         )
     return {'data': trace, 'layout': layout}, temps.to_json()
 
-# @app.callback(
-#     Output('temp-annual-rankings', 'children'),
-#     [Input('all-data', 'children'),
-#     Input('norms', 'children'),
-#     Input('product','value')])
-# def produce_annual_ranks(data, norms, value):
-#     if value == 'temp-annual-ranks' or value == 'climate-for-day':
-#         temps = pd.read_json(data)
-#         temps['Date'] = pd.to_datetime(temps['Date'], unit='ms')
-#         temps['d'] = temps.Date.dt.day
-#         temps['m'] = temps.Date.dt.month
-        
-#         df_norms = pd.read_json(norms)
-#         # print(df_norms)
-#         df_norms['date'] = pd.to_datetime(df_norms[2], unit='ms')
-#         # print(df_norms)
-#         df_norms = df_norms.drop([1,2], axis=1)
-#         # print(df_norms)
-#         df_norms['d'] = df_norms.date.dt.day
-#         df_norms['m'] = df_norms.date.dt.month
-#         # df_norms.set_index(['Date'], inplace=True)
-#         # print(df_norms.head())
-#         temps = temps.merge(df_norms, 'inner', on=['m', 'd']).drop(['d', 'm', 'date'], axis=1)
-        
-#         # print(temps.head(15))
-#         temps.set_index('Date', inplace=True)
-#         # print(temps.head(15))
-#         temps['dd'] = ((temps['TMAX'] - temps[3]) + (temps['TMIN'] - temps[4])) / 2
-#         # print(type(temps))
-#         # print(temps.head())
-#         annual_temp_totals = temps.resample('Y').sum()['dd'].sort_values(ascending=False)
-
-#         annual_temp_totals = annual_temp_totals.reset_index()
-        
-#         annual_temp_totals = pd.DataFrame(annual_temp_totals)
-#         # print(type(annual_temp_totals))
-#         # annual_temp_totals = annual_temp_totals.sort_values('dd')
-#         print(annual_temp_totals.head(20))
-
-#         return annual_temp_totals.to_json()
 
 @app.callback(
     Output('graph-stats', 'children'),
@@ -1375,7 +1308,7 @@ def update_figure(temp_data, rec_highs, rec_lows, norms, selected_year, period):
 def display_graph_stats(temps, selected_product):
     temps = pd.read_json(temps)
     temps.index = pd.to_datetime(temps.index, unit='ms')
-    # print(temps.head(10))
+   
     temps = temps[np.isfinite(temps['TMAX'])]
     day_count = temps.shape[0]
     rec_highs = len(temps[temps['TMAX'] == temps['rh']])
@@ -1386,8 +1319,7 @@ def display_graph_stats(temps, selected_product):
     nl = temps['nl'].sum()
     tmax = temps['TMAX'].sum()
     tmin = temps['TMIN'].sum()
-    # nh_sum = temps['nh'][-31:].sum()
-    # nh_sum2 = temps['nh'][:60].sum()
+  
 
     degree_days = ((temps['TMAX'].sum() - temps['nh'].sum()) + (temps['TMIN'].sum() - temps['nl'].sum())) / 2
     if degree_days > 0:
@@ -1494,7 +1426,7 @@ def rec_high_temps(selected_year):
         rec_highs = df_rec_highs
     else:
         rec_highs = df_rec_highs.drop(df_rec_highs.index[59])
-    # print(rec_highs)
+   
     return rec_highs.to_json()
 
 @app.callback(Output('rec-lows', 'children'),
@@ -1560,14 +1492,14 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
     all_data = pd.read_json(all_data)
     all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
     all_data.set_index(['Date'], inplace=True)
-    # print(all_data)
+  
     if g_l == '>=':
         df = all_data.loc[all_data[min_max]>=input_value]
     else:
         df = all_data.loc[all_data[min_max]<input_value]
     df_count = df.resample('Y').count()[min_max]
     df = pd.DataFrame({'DATE':df_count.index, 'Selected Days':df_count.values})
-    # print(df)
+   
     
     data = [
         go.Bar(
@@ -1592,14 +1524,14 @@ def fyma_stuff(product):
     if product == 'fyma-graph':
         return html.Div(id='fyma-max-or-min-stats')
 
-    # return {'data': data, 'layout': layout}
+  
 
 @app.callback(
     Output('fyma-max-or-min-stats', 'children'),
     [Input('fyma-param', 'value'),
     Input('all-data', 'children')])
 def display_fyma_stats(selected_param, all_data):
-    # print(product)
+ 
     fyma_temps = pd.read_json(all_data)
     fyma_temps['Date'] = pd.to_datetime(fyma_temps['Date'], unit='ms')
     fyma_temps.set_index(['Date'], inplace=True)
@@ -1622,8 +1554,6 @@ def display_fyma_stats(selected_param, all_data):
     max_min_index = all_min_rolling_mean.idxmax().strftime('%Y-%m-%d')
     current_min = all_min_rolling_mean[-1].round(2)
   
-    # if product == 'fyma-graph':    
-        # print(type(max_index))
 
     if selected_param == 'TMAX':
 
@@ -1759,7 +1689,7 @@ def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
     Input('product', 'value')])
 def clean_df5(all_data, product_value):
     dr = pd.read_json(all_data)
-    # print(dr)
+   
     dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
    
     df_date_index = df_all_temps.set_index(['Date'])
@@ -2404,8 +2334,7 @@ def update_current_stats(selected_sea, selected_product, df_fdta):
 def update_figure(selected_sea, selected_year, df_fdta):
     traces = []
     df_fdta = pd.read_json(df_fdta)
-    # print(df_fdta)
-    # selected_years = [selected_year1,selected_year2,selected_year3,selected_year4]
+   
     for x in selected_year:
         sorted_daily_values=df_fdta[df_fdta.index.year == x]
         traces.append(go.Scatter(
