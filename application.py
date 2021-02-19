@@ -328,7 +328,9 @@ def display_annual_table(all_data, lake):
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
-    # print(dr.head(10))
+        dr = dr.sort_values('Value')
+
+    print(dr.head(10))
     
     # print(columns)
     # dr['Date'] = dr['Date']s.dt.strftime('%Y-%m-%d')
