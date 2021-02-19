@@ -148,8 +148,13 @@ def river_App():
             html.Div([
                 html.Div([
                     html.Div([
-                        html.Div(id='lake-annual-min-table'),
-                    ]),
+                        html.Div([
+                            html.Div(id='lake-annual-min-table'),
+                        ]),
+                    ],
+                        className='four columns'
+                    ),
+                    
                 ],
                     className='twelve columns'
                 ),

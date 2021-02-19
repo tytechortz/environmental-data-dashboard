@@ -225,11 +225,11 @@ def ice_App():
                 ],
                     className='eight columns'
                 ),
-                html.Div([
-                    html.Div(id='stats-n-stuff')
-                ],
-                    className='four columns'
-                ), 
+            #     html.Div([
+            #         html.Div(id='stats-n-stuff')
+            #     ],
+            #         className='four columns'
+            #     ), 
             ],
                 className='row'
             ),

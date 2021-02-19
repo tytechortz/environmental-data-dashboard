@@ -2424,19 +2424,13 @@ def update_figure(selected_sea, selected_year, df_fdta):
 def update_figure_d(selected_product, selected_sea, df_yta):
     df_yta = pd.read_json(df_yta)
     df_yta.index = df_yta.index.strftime("%Y-%m-%d")
-    print(df_yta.tail())
+   
     trace = [
         go.Scatter(
             y = df_yta[selected_sea],
             x = df_yta.index,
             name='1 Year Moving Avg'
         ),
-        # go.Scatter(
-        #     y = all_min_temp_fit[0],
-        #     x = all_min_temp_fit.index,
-        #     name = 'trend',
-        #     line = {'color':'red'}
-        # )
     ]
     layout = go.Layout(
         xaxis = {'rangeslider': {'visible':True},},
@@ -2465,10 +2459,6 @@ def update_figure_d(selected_product, selected_sea, df_fdta):
        
     return df_year_rolling_mean.to_json(date_format='iso')
 
-
-
-
-    
 
 
 @app.callback([
