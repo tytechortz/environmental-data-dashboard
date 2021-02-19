@@ -284,9 +284,9 @@ def display_annual_table(all_data, lake):
         set(dr['index'].dt.date)
 
         dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
-        print(dr.head())
+       
         dr = dr.sort_values('Value')
-        print(dr.head())
+       
        
         dr = dr.drop(['Site', 'power level'], 1)
         columns=[
@@ -305,6 +305,8 @@ def display_annual_table(all_data, lake):
         dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
 
         dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
+
+        dr = dr.sort_values('Value')
 
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
