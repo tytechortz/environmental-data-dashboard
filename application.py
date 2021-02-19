@@ -23,7 +23,7 @@ import requests
 pd.set_option('display.max_rows', None)
 # print(df_rec_highs)
 pd.set_option('display.max_rows', None)
-print(df_all_temps)
+# print(df_all_temps)
 today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
@@ -273,7 +273,7 @@ def display_annual_table(all_data, lake):
     # dr = dr.reset_index()
 
     # dr = annual_min_all.reset_index()
-    print(dr.head(10))
+    # print(dr.head(10))
     if lake == 'lakepowell':
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
        
@@ -284,6 +284,9 @@ def display_annual_table(all_data, lake):
         set(dr['index'].dt.date)
 
         dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        print(dr.head())
+        dr = dr.sort_values('Value')
+        print(dr.head())
        
         dr = dr.drop(['Site', 'power level'], 1)
         columns=[
@@ -371,7 +374,7 @@ def produce_stats(lake, site, data, date ):
 def get_current_volume(lake, data):
     if lake == 'lakepowell' or lake == 'hdmlc':
         data = pd.read_json(data)
-        print(data)
+        print(data.tail())
        
         # data['Date'] = pd.to_datetime(data['Date'])
 
@@ -419,7 +422,7 @@ def produce_changes(lake, period, cv, last_v, data):
       
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
-        print(rec_low)
+        # print(rec_low)
        
         dif_rl = df['Value'][-1] - rec_low
 
@@ -493,7 +496,7 @@ def clean_data(lake):
           
             for i in range(9): next(cr)
             df_water = pd.DataFrame(cr)
-            print(df_water)
+            # print(df_water)
             df_water = df_water.drop(df_water.columns[[1,3,4,5]], axis=1)
             df_water.columns = ["Site", "Value", "Date"]
             # print(df_water.head(10))
