@@ -398,11 +398,11 @@ def get_current_volume(lake, powell_data, mead_data, combo_data):
     Input('period', 'value'),
     Input('current-volume', 'children'),
     Input('last_v', 'children'),
-    Input('selected-water-data', 'children')])
-def produce_changes(lake, period, cv, last_v, data):
-    df = pd.read_json(data)
+    Input('combo-water-data', 'children')])
+def produce_changes(lake, period, cv, last_v, combo_data):
   
     if lake == 'combo':
+        df = pd.read_json(combo_data)
        
         current_volume = df['Value'][-1]
        
