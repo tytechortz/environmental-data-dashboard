@@ -238,26 +238,39 @@ def display_annual_min_table(value):
     Output('water-datatable-interactivity', 'data'),
     Output('water-datatable-interactivity', 'columns'),
     Output('d-min', 'children')],
-    [Input('selected-water-data', 'children'),
+    [Input('powell-water-data', 'children'),
+    Input('mead-water-data', 'children'),
+    Input('combo-water-data', 'children'),
     Input('lake', 'value')])
-def display_annual_table(all_data, lake):
-    dr = pd.read_json(all_data)
+def display_annual_table(powell_data, mead_data, combo_data, lake):
+    powell_dr = pd.read_json(powell_data)
+    # print(powell_dr.head())
+    mead_dr = pd.read_json(mead_data)
+    combo_dr = pd.read_json(combo_data)
    
     if lake == 'lakepowell':
-        annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        annual_min_all = powell_dr.loc[powell_dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        print(annual_min_all)
        
         annual_min_all = annual_min_all.iloc[37:]
     
-        dr = annual_min_all.reset_index()
+        dr = annual_min_all
+        print(dr.head())
        
-        set(dr['index'].dt.date)
+        # set(dr['index'].dt.date)
 
-        dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        # dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        # dr.index = dr.index.dt.strftime('%Y-%m-%d')
        
         dr = dr.sort_values('Value')
        
-       
         dr = dr.drop(['Site', 'power level'], 1)
+        print(dr)
+        dr = dr.reset_index()
+        dr = dr.rename(columns={dr.columns[0]: "Date"})
+        dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        
+        print(dr)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
@@ -492,8 +505,8 @@ def clean_powell_data(lake):
         
     mead_df = df_mead_water.drop(df_mead_water.index[0])
 
-    print(mead_df.head())
-    print(powell_df.head())
+    # print(mead_df.head())
+    # print(powell_df.head())
 
            
     start_date = date(1963, 6, 29)
@@ -502,12 +515,6 @@ def clean_powell_data(lake):
     
     days = delta.days
     df_mead_water = mead_df[9527:]
-    
-    # df_mead_water = df_mead_water.set_index('Date')
-    # df_mead_water = df_mead_water.sort_index()
-    
-    # df_powell_water = df_powell_water.set_index('Date')
-    # df_powell_water = df_powell_water.sort_index()
     
     df_total = pd.merge(df_mead_water, df_powell_water, how='inner', left_index=True, right_index=True)
 
@@ -518,7 +525,7 @@ def clean_powell_data(lake):
     df_total['Value'] = df_total['Value_x'] + df_total['Value_y']
     
     combo_df = df_total.drop(df_total.index[0])
-    print(combo_df.head())
+    # print(combo_df.head())
 
     return powell_df.to_json(), mead_df.to_json(), combo_df.to_json()
     
