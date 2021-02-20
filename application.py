@@ -270,7 +270,7 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
         dr = dr.rename(columns={dr.columns[0]: "Date"})
         dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
 
-        dr['Diff'] = (dr['Value'])
+        dr['Diff'] = dr['Value'] - dr['Value'].shift(1)
 
         
         print(dr)
