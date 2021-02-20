@@ -532,6 +532,7 @@ def clean_powell_data(lake):
 def lake_graph(lake, powell_data, mead_data, combo_data):
     powell_df = pd.read_json(powell_data)
     mead_df = pd.read_json(mead_data)
+    combo_df = pd.read_json(combo_data)
 
     traces = []
     if lake == 'hdmlc':
@@ -561,8 +562,8 @@ def lake_graph(lake, powell_data, mead_data, combo_data):
     elif lake == 'combo':
         title = 'Lake Powell and Lake Mead'
         traces.append(go.Scatter(
-            y = df['Value'],
-            x = df.index,
+            y = combo_df['Value'],
+            x = combo_df.index,
             name='Water Level'
         )),
 
