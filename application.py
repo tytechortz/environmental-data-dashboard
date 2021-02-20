@@ -269,19 +269,26 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
         ]
 
     elif lake == 'hdmlc':
-        annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
+        annual_min_all = mead_dr.loc[mead_dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
         
         annual_min_all = annual_min_all.iloc[37:]
 
-        dr = annual_min_all.reset_index()
+        dr = annual_min_all
+
+        dr = dr.sort_values('Value')
+
+        dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
+
+        dr = dr.reset_index()
+        print(dr)
 
         set(dr['index'].dt.date)
 
         dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
 
-        dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
+        
 
-        dr = dr.sort_values('Value')
+        
 
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
