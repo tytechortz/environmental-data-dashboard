@@ -294,16 +294,24 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
        
         annual_min_all = annual_min_all.iloc[37:]
 
-        dr = annual_min_all.reset_index()
+        dr = annual_min_all
 
-        set(dr['index'].dt.date)
+        dr = dr.sort_values('Value')
 
-        dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        dr = dr.reset_index()
+
+        # set(dr['index'].dt.date)
+
+        # dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        dr = dr.rename(columns={dr.columns[0]: "Date"})
+
+        dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        dr['Diff'] = dr['Value'] - dr['Value'].shift(1)
 
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
-        dr = dr.sort_values('Value')
+        # dr = dr.sort_values('Value')
 
         
     d_min = dr['Value'].min()
