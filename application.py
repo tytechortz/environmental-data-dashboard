@@ -244,36 +244,26 @@ def display_annual_min_table(value):
     Input('lake', 'value')])
 def display_annual_table(powell_data, mead_data, combo_data, lake):
     powell_dr = pd.read_json(powell_data)
-    # print(powell_dr.head())
     mead_dr = pd.read_json(mead_data)
     combo_dr = pd.read_json(combo_data)
    
     if lake == 'lakepowell':
         annual_min_all = powell_dr.loc[powell_dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
-        print(annual_min_all)
        
         annual_min_all = annual_min_all.iloc[37:]
     
         dr = annual_min_all
-        print(dr.head())
-       
-        # set(dr['index'].dt.date)
-
-        # dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
-        # dr.index = dr.index.dt.strftime('%Y-%m-%d')
-       
+     
         dr = dr.sort_values('Value')
        
         dr = dr.drop(['Site', 'power level'], 1)
-        print(dr)
+      
         dr = dr.reset_index()
         dr = dr.rename(columns={dr.columns[0]: "Date"})
         dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
 
         dr['Diff'] = dr['Value'] - dr['Value'].shift(1)
 
-        
-        print(dr)
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
