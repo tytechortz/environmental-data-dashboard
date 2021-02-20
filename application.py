@@ -288,7 +288,6 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
   
     else:
         dr = combo_dr.drop(['Site_x', 'Value_x', 'Site_y', 'Value_y', '1090', '1075', '1050', '1025', 'power level'], 1)
-        print(dr.head())
        
         annual_min_all = dr.loc[dr.groupby(pd.Grouper(freq='Y')).idxmin().iloc[:, 0]]
        
@@ -300,9 +299,6 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
 
         dr = dr.reset_index()
 
-        # set(dr['index'].dt.date)
-
-        # dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
         dr = dr.rename(columns={dr.columns[0]: "Date"})
 
         dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
@@ -311,8 +307,7 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
         columns=[
             {"name": i, "id": i, "selectable": True} for i in dr.columns
         ]
-        # dr = dr.sort_values('Value')
-
+    
         
     d_min = dr['Value'].min()
      
