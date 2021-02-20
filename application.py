@@ -347,10 +347,13 @@ def produce_stats(lake, site, data, date ):
     Output('last_v', 'children'),
     Output('cvd', 'children')],
     [Input('lake', 'value'),
-    Input('selected-water-data', 'children')])
-def get_current_volume(lake, data):
-    if lake == 'lakepowell' or lake == 'hdmlc':
-        data = pd.read_json(data)
+    Input('powell-water-data', 'children'),
+    Input('mead-water-data', 'children'),
+    Input('combo-water-data', 'children')])
+def get_current_volume(lake, powell_data, mead_data, combo_data):
+    if lake == 'lakepowell':
+    # if lake == 'lakepowell' or lake == 'hdmlc':
+        data = pd.read_json(powell_data)
        
        
         data = data.sort_index()
@@ -362,8 +365,24 @@ def get_current_volume(lake, data):
         last_v = data.iloc[-1,0]
 
         return current_volume, site, last_v, cvd
+
+    elif lake == 'hdmlc':
+        data = pd.read_json(mead_data)
+       
+       
+        data = data.sort_index()
+        site = data.iloc[-3, 0]
+      
+        current_volume = data.iloc[-1,1]
+        current_volume_date = data.index[-1]
+        cvd = str(current_volume_date)
+        last_v = data.iloc[-1,0]
+
+        return current_volume, site, last_v, cvd
+
+
     elif lake == 'combo':
-        data = pd.read_json(data)
+        data = pd.read_json(combo_data)
         site = data.iloc[-1, 0]
         current_volume = data['Value'][-1]
         current_volume_date = data.index[-1]
