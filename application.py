@@ -526,9 +526,11 @@ def clean_powell_data(lake):
 @app.callback(
     Output('lake-levels', 'figure'),
     [Input('lake', 'value'),
-    Input('selected-water-data', 'children')])
-def lake_graph(lake, data):
-    df = pd.read_json(data)
+    Input('powell-water-data', 'children'),
+    Input('mead-water-data', 'children'),
+    Input('combo-water-data', 'children')])
+def lake_graph(lake, powell_data, mead_data, combo_data):
+    powell_df = pd.read_json(powell_data)
 
     traces = []
     if lake == 'hdmlc':
@@ -543,16 +545,16 @@ def lake_graph(lake, data):
             ))
     elif lake == 'lakepowell':
       
-        data = df.sort_index()
+        data = powell_df.sort_index()
         title = 'Lake Powell'
         traces.append(go.Scatter(
-            y = df['Value'],
-            x = df.index,
+            y = powell_df['Value'],
+            x = powell_df.index,
             name='Water Level'
         )),
         traces.append(go.Scatter(
-            y = df['power level'],
-            x = df.index,
+            y = powell_df['power level'],
+            x = powell_df.index,
             name = 'Power level'
         )),
     elif lake == 'combo':
