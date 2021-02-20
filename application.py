@@ -280,11 +280,15 @@ def display_annual_table(powell_data, mead_data, combo_data, lake):
         dr = dr.drop(['Site', '1090', '1075', '1050', '1025'], 1)
 
         dr = dr.reset_index()
+        
+        dr = dr.rename(columns={dr.columns[0]: "Date"})
         print(dr)
+        dr['Date'] = dr['Date'].dt.strftime('%Y-%m-%d')
+        dr['Diff'] = dr['Value'] - dr['Value'].shift(1)
+        print(dr)
+        # set(dr['index'].dt.date)
 
-        set(dr['index'].dt.date)
-
-        dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
+        # dr['index'] = dr['index'].dt.strftime('%Y-%m-%d')
 
         
 
