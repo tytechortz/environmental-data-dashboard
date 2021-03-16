@@ -398,8 +398,10 @@ def get_current_volume(lake, powell_data, mead_data, combo_data):
     Input('period', 'value'),
     Input('current-volume', 'children'),
     Input('last_v', 'children'),
-    Input('combo-water-data', 'children')])
-def produce_changes(lake, period, cv, last_v, combo_data):
+    Input('combo-water-data', 'children'),
+    Input('mead-water-data', 'children'),
+    Input('powell-water-data', 'children')])
+def produce_changes(lake, period, cv, last_v, combo_data, mead_data, powell_data):
   
     if lake == 'combo':
         df = pd.read_json(combo_data)
@@ -429,7 +431,9 @@ def produce_changes(lake, period, cv, last_v, combo_data):
                 className='round1'
             ),
 
-    elif lake == 'lakepowell' or 'hdmlc':
+    elif lake == 'lakepowell':
+        df = pd.read_json(powell_data)
+    # elif lake == 'lakepowell' or 'hdmlc':
       
         data = df.sort_index()
      
@@ -447,8 +451,38 @@ def produce_changes(lake, period, cv, last_v, combo_data):
         annual_min_twok = annual_min[(annual_min.index.year > 1999)]
         rec_low = annual_min_twok['Value'].min()
         dif_rl = data['Value'].iloc[-1] - rec_low
+ 
+        return html.Div([
+                    html.Div('Change', style={'text-align':'center'}),
+                    html.Div('{:,.0f}'.format(change), style={'text-align':'center'}),
+                    html.Div('Record Low', style={'text-align':'center'}),
+                    html.Div('{:,.0f}'.format(rec_low), style={'text-align':'center'}),
+                    html.Div('Difference', style={'text-align':'center'}),
+                    html.Div('{:,.0f}'.format(dif_rl), style={'text-align':'center'}),
+                ],
+                    className='round1'
+                ),
 
-    
+
+    elif lake == 'hdmlc':
+        df = pd.read_json(mead_data)
+      
+        data = df.sort_index()
+     
+        current_volume = data.iloc[-0,-0]
+        current_volume = data['Value'].iloc[-1]
+      
+       
+        past_data = data.iloc[-(int(period)),1]
+      
+        
+        change = current_volume - past_data
+     
+        annual_min = data.resample('Y').min()
+      
+        annual_min_twok = annual_min[(annual_min.index.year > 1999)]
+        rec_low = annual_min_twok['Value'].min()
+        dif_rl = data['Value'].iloc[-1] - rec_low
  
     return html.Div([
                 html.Div('Change', style={'text-align':'center'}),
